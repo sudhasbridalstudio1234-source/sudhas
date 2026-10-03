@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudha’s Beauty Care & Spa | Beauty & Bridal Care Since 2006</title>
+    <meta name="description" content="Sudha’s Beauty Care & Spa in Mananthavady, Wayanad — professional beauty, hair, skin, body and bridal services for ladies and kids, with two convenient locations.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        olive: {
+                            100: '#eef1eb',
+                            200: '#d7ded1',
+                            300: '#c3cbb1', // Soft Sage
+                            400: '#a2b08d',
+                            500: '#8B9A76', // Light Olive Green
+                            600: '#717e5f',
+                            800: '#3a4332',
+                            900: '#2e3527', // Dark olive/charcoal
+                        },
+                        cream: {
+                            DEFAULT: '#f8f6f0', // Warm Cream
+                            light: '#fcfcfb', // Off-white
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(46, 53, 39, 0.08)',
+                        'soft-hover': '0 20px 50px -10px rgba(46, 53, 39, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+
+    <!-- Schema.org for Local Business -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BeautySalon",
+      "name": "Sudha’s Beauty Care & Spa",
+      "image": "assets/images/logo.jpg",
+      "telephone": "+919744945072",
+      "description": "Professional beauty, hair, skin and wellness care for ladies & kids in Mananthavady.",
+      "foundingDate": "2006",
+      "founder": {
+          "@type": "Person",
+          "name": "Sudha Chandran"
+      },
+      "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Mananthavady",
+          "addressRegion": "Kerala",
+          "postalCode": "670645",
+          "addressCountry": "IN"
+      }
+    }
+    </script>
+</head>
+<body class="font-sans text-olive-900 bg-cream-light antialiased overflow-x-hidden selection:bg-olive-200 selection:text-olive-900">
+
+    <!-- Preloader -->
+    <div id="preloader" class="fixed inset-0 bg-cream-light z-50 flex items-center justify-center transition-opacity duration-700">
+        <div class="animate-pulse">
+            <img src="assets/images/logo.jpg" alt="Sudha’s Beauty Care & Spa" class="w-32 h-32 rounded-full shadow-soft opacity-0 transition-opacity duration-700" id="preloader-logo" onload="this.classList.remove('opacity-0')">
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed w-full z-40 transition-all duration-300 bg-cream-light/95 backdrop-blur-sm border-b border-olive-100 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex-shrink-0 flex items-center gap-3">
+                    <a href="#" class="block">
+                        <img class="h-16 lg:h-20 w-auto rounded-full transition-all duration-300" src="assets/images/logo.jpg" alt="Sudha’s Beauty Care & Spa" id="nav-logo">
+                    </a>
+                    <span class="font-serif font-medium text-lg hidden sm:block tracking-wide">Sudha’s</span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden lg:flex space-x-6 items-center">
+                    <a href="#home" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors">Home</a>
+                    <a href="#about" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors">About</a>
+                    <a href="#services" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors">Parlour Services</a>
+                    <a href="#bridal" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors font-semibold">Bridal Studio</a>
+                    <a href="#gallery" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors">Gallery</a>
+                    <a href="#locations" class="text-xs uppercase tracking-widest text-olive-800 hover:text-olive-500 transition-colors">Locations</a>
+                    <a href="#contact" class="px-6 py-2.5 bg-olive-500 text-white text-xs uppercase tracking-widest rounded-full hover:bg-olive-600 transition-colors shadow-soft">Book Appointment</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="lg:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-olive-800 hover:text-olive-500 focus:outline-none p-2">
+                        <i class="ph ph-list text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden lg:hidden absolute w-full bg-cream-light border-b border-olive-100 shadow-soft">
+            <div class="px-4 pt-2 pb-6 space-y-4 flex flex-col items-center">
+                <a href="#home" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2">Home</a>
+                <a href="#about" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2">About</a>
+                <a href="#services" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2">Parlour Services</a>
+                <a href="#bridal" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2 font-semibold">Bridal Studio</a>
+                <a href="#gallery" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2">Gallery</a>
+                <a href="#locations" class="mobile-link block text-sm uppercase tracking-widest text-olive-800 hover:text-olive-500 w-full text-center py-2">Locations</a>
+                <a href="#contact" class="mobile-link mt-4 inline-block px-8 py-3 bg-olive-500 text-white text-xs uppercase tracking-widest rounded-full hover:bg-olive-600 shadow-soft">Book Appointment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Cinematic Video Hero Section -->
+    <section id="home" class="relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 min-h-[90vh] flex items-center overflow-hidden">
+        <!-- Background Video (User needs to add inauguration.mp4 to assets/video/) -->
+        <video autoplay muted loop playsinline preload="metadata" class="absolute inset-0 w-full h-full object-cover z-0" poster="assets/images/photo3.jpg">
+            <source src="assets/video/inauguration.mp4" type="video/mp4">
+        </video>
+        <!-- Overlay -->
+        <div class="video-overlay absolute inset-0 z-0"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
+            <div class="max-w-3xl animate-fade-up">
+                <span class="block text-cream text-sm md:text-base uppercase tracking-[0.2em] mb-4 font-medium opacity-90">Established Since 2006</span>
+                <h1 class="font-serif text-4xl md:text-5xl lg:text-7xl text-white leading-tight mb-6 text-shadow">
+                    Beauty, Care & <br/> Confidence — <span class="italic font-light">Since 2006</span>
+                </h1>
+                <p class="text-cream-light text-lg md:text-xl font-light mb-10 opacity-90 max-w-2xl">
+                    Professional beauty, hair, skin and wellness care for ladies & kids, with two convenient locations in Mananthavady.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-start mb-10">
+                    <a href="#contact" class="px-8 py-4 bg-cream text-olive-900 text-sm uppercase tracking-widest rounded-full hover:bg-white transition-colors shadow-soft font-medium text-center">Book an Appointment</a>
+                    <a href="#services" class="px-8 py-4 border border-cream/50 text-white text-sm uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors text-center backdrop-blur-sm">Explore Services</a>
+                </div>
+                <div class="text-xs md:text-sm text-cream/80 tracking-wider uppercase flex items-center gap-3">
+                    <span class="w-8 h-px bg-cream/50"></span>
+                    20 Years of Experience • Ladies & Kids • Mananthavady
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Intro / About Section -->
+    <section id="about" class="py-24 bg-cream">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="relative max-w-md mx-auto lg:mx-0 scroll-reveal">
+                    <div class="aspect-[3/4] rounded-2xl overflow-hidden shadow-soft">
+                        <img src="assets/images/photo1.jpg" alt="Sudha's Beauty Care Experience" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-8 -right-8 w-2/3 aspect-square rounded-full overflow-hidden shadow-soft-hover border-8 border-cream hidden md:block">
+                        <img src="assets/images/photo6.jpg" alt="Beauty details" class="w-full h-full object-cover">
+                    </div>
+                </div>
+                <div class="scroll-reveal delay-100">
+                    <h2 class="font-serif text-3xl md:text-4xl lg:text-5xl text-olive-900 mb-8">Two Decades of <br/><span class="italic font-light text-olive-600">Beauty & Care</span></h2>
+                    <div class="w-16 h-px bg-olive-400 mb-8"></div>
+                    <p class="text-olive-800 text-lg leading-relaxed font-light mb-6">
+                        With 20 years of experience, Sudha’s Beauty Care & Spa has grown into a trusted beauty destination in Mananthavady, offering professional beauty, hair, skin and wellness services for ladies and kids.
+                    </p>
+                    <p class="text-olive-800 text-lg leading-relaxed font-light mb-8">
+                        Founded by Sudha Chandran, the salon focuses on personal attention, professional care and a comfortable beauty experience designed around your needs.
+                    </p>
+                    <a href="#gallery" class="inline-flex items-center gap-2 text-olive-600 hover:text-olive-900 transition-colors uppercase tracking-widest text-sm font-medium border-b border-olive-300 hover:border-olive-900 pb-1">
+                        View our space <i class="ph ph-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Parlour Services Section -->
+    <section id="services" class="py-24 bg-cream-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="font-serif text-4xl md:text-5xl text-olive-900 mb-4">Parlour Services</h2>
+                <p class="text-olive-700 font-light text-lg">Professional beauty and wellness care designed for ladies and kids.</p>
+                <p class="text-sm mt-4 text-olive-500 uppercase tracking-widest font-medium">Working Time: 24 Hours <span class="text-xs lowercase font-light block mt-1">(contact us to confirm your preferred service & time)</span></p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Skin & Beauty -->
+                <div class="bg-cream rounded-2xl shadow-soft hover:shadow-soft-hover transition-all duration-500 group scroll-reveal overflow-hidden flex flex-col border border-olive-100 relative">
+                    <div class="p-8 flex-grow">
+                        <h3 class="font-serif text-2xl text-olive-900 mb-6 group-hover:text-olive-600 transition-colors">Skin & Beauty</h3>
+                        <ul class="space-y-3 text-olive-800 font-light text-sm mb-8">
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> Threading</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> Facial</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> Bleach</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> De-tan</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> Pedicure & Manicure</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-sparkle text-olive-400"></i> Waxing & Other care</li>
+                        </ul>
+                        <a href="#contact" class="text-xs uppercase tracking-widest text-olive-500 font-bold hover:text-olive-900 transition-colors mt-auto block">Book Service <i class="ph ph-arrow-right inline-block"></i></a>
+                    </div>
+                </div>
+
+                <!-- Hair Care -->
+                <div class="bg-cream rounded-2xl shadow-soft hover:shadow-soft-hover transition-all duration-500 group scroll-reveal delay-100 overflow-hidden flex flex-col border border-olive-100 relative">
+                    <div class="p-8 flex-grow">
+                        <h3 class="font-serif text-2xl text-olive-900 mb-6 group-hover:text-olive-600 transition-colors">Hair Care</h3>
+                        <ul class="space-y-3 text-olive-800 font-light text-sm mb-8">
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Hair Cutting</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Hair Colouring</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Hair Treatments</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Hair Spa</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Hot Oil Massage</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-scissors text-olive-400"></i> Styling & Other care</li>
+                        </ul>
+                        <a href="#contact" class="text-xs uppercase tracking-widest text-olive-500 font-bold hover:text-olive-900 transition-colors mt-auto block">Book Service <i class="ph ph-arrow-right inline-block"></i></a>
+                    </div>
+                </div>
+
+                <!-- Body & Wellness -->
+                <div class="bg-cream rounded-2xl shadow-soft hover:shadow-soft-hover transition-all duration-500 group scroll-reveal delay-200 overflow-hidden flex flex-col border border-olive-100 relative">
+                    <div class="p-8 flex-grow">
+                        <h3 class="font-serif text-2xl text-olive-900 mb-6 group-hover:text-olive-600 transition-colors">Body & Wellness</h3>
+                        <ul class="space-y-3 text-olive-800 font-light text-sm mb-8">
+                            <li class="flex items-center gap-2"><i class="ph ph-drop text-olive-400"></i> Body Massage</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-drop text-olive-400"></i> Steam Bath</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-drop text-olive-400"></i> Body Whitening</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-drop text-olive-400"></i> Relaxation therapies</li>
+                            <li class="flex items-center gap-2"><i class="ph ph-drop text-olive-400"></i> Professional body care</li>
+                        </ul>
+                        <a href="#contact" class="text-xs uppercase tracking-widest text-olive-500 font-bold hover:text-olive-900 transition-colors mt-auto block">Book Service <i class="ph ph-arrow-right inline-block"></i></a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Bridal Studio Division -->
+    <section id="bridal" class="py-24 bg-olive-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-16">
+                <div class="scroll-reveal">
+                    <span class="block text-olive-600 text-sm uppercase tracking-[0.2em] mb-4 font-semibold">Bridal Division</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-olive-900 mb-6">Sudha’s Bridal Studio</h2>
+                    <h3 class="text-2xl font-serif text-olive-800 italic mb-6">Your Bridal Beauty, Beautifully Prepared</h3>
+                    <p class="text-olive-700 text-lg leading-relaxed font-light mb-8">
+                        From bridal makeovers to pre- and post-bridal care, Sudha’s Bridal Studio offers personalized beauty services for your special occasions. We ensure you feel radiant and confident on your most important day.
+                    </p>
+                    
+                    <div class="bg-cream p-8 rounded-2xl border border-olive-200 shadow-soft">
+                        <h4 class="font-medium text-olive-900 mb-2">Planning Your Bridal Look?</h4>
+                        <p class="text-olive-700 text-sm mb-6">Let’s create a look that feels beautifully yours. <span class="italic text-olive-600 block mt-1">Freelance service available.</span></p>
+                        <div class="flex flex-col sm:flex-row gap-4">
+                            <a href="tel:+919778592280" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-olive-900 text-white text-xs uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors">
+                                <i class="ph ph-phone"></i> Call 97785 92280
+                            </a>
+                            <a href="https://wa.me/919778592280" target="_blank" class="inline-flex items-center justify-center gap-2 px-6 py-3 border border-olive-400 text-olive-900 text-xs uppercase tracking-widest rounded-full hover:bg-olive-200 transition-colors">
+                                <i class="ph ph-whatsapp-logo"></i> WhatsApp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="relative scroll-reveal">
+                    <div class="aspect-[4/5] rounded-t-full overflow-hidden shadow-soft-hover border-8 border-cream">
+                        <img src="assets/images/photo3.jpg" alt="Bridal Makeover" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bridal Services List -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8 scroll-reveal mt-16 pt-16 border-t border-olive-200">
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Bridal Makeover</h4>
+                    <p class="text-olive-700 font-light text-sm">Professional bridal makeover services tailored to your style.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Pre & Post Bridal Skin Care Package</h4>
+                    <p class="text-olive-700 font-light text-sm">Beauty and skin-care preparation before and after the wedding.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Guest Look</h4>
+                    <p class="text-olive-700 font-light text-sm">Elegant makeup looks for wedding guests and special occasions.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Saree Pre-Pleating & Fold Boxing</h4>
+                    <p class="text-olive-700 font-light text-sm">Professional saree pre-pleating and neat, organized folding and boxing.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Party Makeup Look</h4>
+                    <p class="text-olive-700 font-light text-sm">Stunning makeup looks for celebrations and parties.</p>
+                </div>
+                <div>
+                    <h4 class="font-serif text-xl text-olive-900 mb-2">Hair Styling</h4>
+                    <p class="text-olive-700 font-light text-sm">Professional styling for bridal and occasion looks.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- General Gallery & Bridal Gallery Section -->
+    <section id="gallery" class="py-24 bg-cream-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="font-serif text-4xl text-olive-900 mb-4">Our Space & Bridal Moments</h2>
+                <p class="text-olive-700 font-light max-w-2xl mx-auto">A glimpse into our salon experience and the beautiful bridal looks we create.</p>
+            </div>
+            
+            <!-- Masonry Gallery -->
+            <div class="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+                <!-- Image 1 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo3.jpg')">
+                    <img src="assets/images/photo3.jpg" alt="Bridal moment" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+                
+                <!-- Image 2 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo7.jpg')">
+                    <img src="assets/images/photo7.jpg" alt="Client care" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+
+                <!-- Image 3 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo5.jpg')">
+                    <img src="assets/images/photo5.jpg" alt="Bridal styling" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+
+                <!-- Image 4 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo1.jpg')">
+                    <img src="assets/images/photo1.jpg" alt="Salon experience" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+
+                <!-- Image 5 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo8.jpg')">
+                    <img src="assets/images/photo8.jpg" alt="Bridal look" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+
+                <!-- Image 6 -->
+                <div class="break-inside-avoid scroll-reveal rounded-xl overflow-hidden group cursor-pointer relative shadow-soft" onclick="openLightbox('assets/images/photo4.jpg')">
+                    <img src="assets/images/photo4.jpg" alt="Beauty styling" class="w-full h-auto transition-transform duration-700 group-hover:scale-105" loading="lazy">
+                    <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="fixed inset-0 z-[60] bg-cream-light/95 backdrop-blur-md flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+        <button onclick="closeLightbox()" class="absolute top-6 right-6 text-olive-900 hover:text-olive-500 focus:outline-none transition-colors">
+            <i class="ph ph-x text-3xl"></i>
+        </button>
+        <img id="lightbox-img" src="" alt="Gallery full view" class="max-h-[85vh] max-w-[90vw] rounded-lg shadow-soft border border-olive-200">
+    </div>
+
+    <!-- Locations Section -->
+    <section id="locations" class="py-24 bg-cream border-t border-olive-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 scroll-reveal">
+                <h2 class="font-serif text-4xl text-olive-900 mb-4">Visit Sudha’s</h2>
+                <p class="text-olive-700 font-light text-lg">Two convenient locations in Mananthavady.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Location 1 -->
+                <div class="bg-cream-light p-8 md:p-10 rounded-2xl shadow-soft border border-olive-100 scroll-reveal flex flex-col h-full">
+                    <h3 class="font-serif text-2xl text-olive-900 mb-2">Sudha’s Beauty Care & Spa</h3>
+                    <p class="text-olive-500 text-sm uppercase tracking-widest mb-6">Location 01</p>
+                    <p class="text-olive-700 font-light mb-2 flex-grow">
+                        Ground Floor,<br/>
+                        Sitara Uniforms Building,<br/>
+                        Calicut Road,<br/>
+                        Mananthavady, Kerala – 670645
+                    </p>
+                    <p class="text-olive-900 font-medium mb-6 flex items-center gap-2"><i class="ph ph-phone"></i> +91 97449 45072</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="tel:+919744945072" class="inline-flex items-center justify-center px-6 py-3 bg-olive-900 text-white text-xs uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors w-full sm:w-auto">
+                            Call Now
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="map-loc-1 inline-flex items-center justify-center px-6 py-3 border border-olive-300 text-olive-900 text-xs uppercase tracking-widest rounded-full hover:bg-olive-100 transition-colors gap-2 w-full sm:w-auto">
+                            <i class="ph ph-map-pin"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Location 2 -->
+                <div class="bg-cream-light p-8 md:p-10 rounded-2xl shadow-soft border border-olive-100 scroll-reveal delay-100 flex flex-col h-full">
+                    <h3 class="font-serif text-2xl text-olive-900 mb-2">Sudha’s Beauty Care & Spa</h3>
+                    <p class="text-olive-500 text-sm uppercase tracking-widest mb-6">Location 02</p>
+                    <p class="text-olive-700 font-light mb-2 flex-grow">
+                        City Square Building,<br/>
+                        Near MY G Digital Hub,<br/>
+                        Valliyoorkavu Road,<br/>
+                        Mananthavady, Kerala – 670645
+                    </p>
+                    <p class="text-olive-900 font-medium mb-6 flex items-center gap-2"><i class="ph ph-phone"></i> +91 97449 45072</p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="tel:+919744945072" class="inline-flex items-center justify-center px-6 py-3 bg-olive-900 text-white text-xs uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors w-full sm:w-auto">
+                            Call Now
+                        </a>
+                        <a href="#" target="_blank" rel="noopener noreferrer" class="map-loc-2 inline-flex items-center justify-center px-6 py-3 border border-olive-300 text-olive-900 text-xs uppercase tracking-widest rounded-full hover:bg-olive-100 transition-colors gap-2 w-full sm:w-auto">
+                            <i class="ph ph-map-pin"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Form Section -->
+    <section id="contact" class="py-24 bg-olive-900 text-cream-light">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <!-- Text Info -->
+                <div class="scroll-reveal">
+                    <h2 class="font-serif text-4xl md:text-5xl mb-6">Let’s Make Time for You</h2>
+                    <p class="text-olive-200 font-light text-lg mb-10">
+                        Ready for your next beauty appointment or bridal consultation? Get in touch with us.
+                    </p>
+                    
+                    <div class="space-y-8 mb-10">
+                        <div>
+                            <p class="text-xs uppercase tracking-widest text-olive-400 mb-2">Parlour Appointments</p>
+                            <a href="tel:+919744945072" class="text-2xl font-serif hover:text-white transition-colors block">+91 97449 45072</a>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-widest text-olive-400 mb-2">Makeover / Bridal</p>
+                            <a href="tel:+919778592280" class="text-2xl font-serif hover:text-white transition-colors block">+91 97785 92280</a>
+                        </div>
+                        <div>
+                            <p class="text-xs uppercase tracking-widest text-olive-400 mb-2">Working Time</p>
+                            <p class="text-xl font-light">24 Hours</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#" class="ig-parlour-link inline-flex items-center gap-2 px-6 py-3 border border-olive-600 text-cream text-xs uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors" target="_blank">
+                            <i class="ph ph-instagram-logo text-lg"></i> @sudhasbeautycarespa
+                        </a>
+                        <a href="#" class="ig-bridal-link inline-flex items-center gap-2 px-6 py-3 border border-olive-600 text-cream text-xs uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors" target="_blank">
+                            <i class="ph ph-instagram-logo text-lg"></i> @sudhas_bridal_studio
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Form -->
+                <div class="bg-cream text-olive-900 rounded-3xl p-8 md:p-10 shadow-soft scroll-reveal">
+                    <form id="appointmentForm" class="space-y-6">
+                        
+                        <!-- Enquiry Type Selector -->
+                        <div class="mb-6 border-b border-olive-200 pb-6">
+                            <label class="block text-xs uppercase tracking-widest text-olive-600 mb-3 font-semibold">I am looking for: *</label>
+                            <div class="flex gap-6">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="enquiry_type" value="parlour" class="accent-olive-900 w-4 h-4" checked>
+                                    <span class="text-sm">Parlour Appointment</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="radio" name="enquiry_type" value="bridal" class="accent-olive-900 w-4 h-4">
+                                    <span class="text-sm">Bridal Enquiry</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Full Name *</label>
+                                <input type="text" id="name" required class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light">
+                            </div>
+                            <div>
+                                <label for="phone" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Phone Number *</label>
+                                <input type="tel" id="phone" required class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light">
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="location" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Preferred Location</label>
+                                <select id="location" class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light appearance-none">
+                                    <option value="" disabled selected>Select location</option>
+                                    <option value="Location 01">Location 01</option>
+                                    <option value="Location 02">Location 02</option>
+                                    <option value="Bridal Venue">At My Venue (Bridal only)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="service" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Service / Treatment</label>
+                                <input type="text" id="service" class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light" placeholder="e.g. Bridal Makeover, Facial">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="date" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Preferred Date</label>
+                                <input type="date" id="date" class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light text-olive-800">
+                            </div>
+                            <div>
+                                <label for="time" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Preferred Time</label>
+                                <input type="time" id="time" class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light text-olive-800">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="message" class="block text-xs uppercase tracking-widest text-olive-600 mb-2 font-semibold">Message</label>
+                            <textarea id="message" rows="3" class="w-full bg-cream border-b border-olive-300 px-2 py-2 focus:outline-none focus:border-olive-900 transition-colors font-light resize-none placeholder-olive-400" placeholder="Any specific requirements?"></textarea>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-olive-500 text-white text-sm uppercase tracking-widest rounded-full hover:bg-olive-600 transition-colors shadow-soft w-full font-medium">
+                                <i class="ph ph-whatsapp-logo text-xl"></i> Send via WhatsApp
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="py-24 bg-cream relative overflow-hidden">
+        <!-- Abstract shape -->
+        <div class="absolute -right-20 -top-20 w-96 h-96 bg-olive-200 rounded-full blur-3xl opacity-40"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 scroll-reveal">
+            <h2 class="font-serif text-4xl md:text-5xl lg:text-6xl text-olive-900 mb-6">Feel Beautiful.<br/>Feel Confident.</h2>
+            <p class="text-olive-700 text-xl font-light mb-10">Professional beauty care with two decades of experience.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#contact" onclick="document.querySelector('input[value=\'parlour\']').checked = true;" class="px-8 py-4 bg-olive-900 text-white text-sm uppercase tracking-widest rounded-full hover:bg-olive-800 transition-colors shadow-soft">Book Parlour Appointment</a>
+                <a href="#contact" onclick="document.querySelector('input[value=\'bridal\']').checked = true;" class="px-8 py-4 border border-olive-300 text-olive-900 text-sm uppercase tracking-widest rounded-full hover:bg-olive-100 transition-colors">Bridal Enquiry</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-cream-light pt-16 pb-8 border-t border-olive-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-2">
+                    <img src="assets/images/logo.jpg" alt="Sudha’s Beauty Care" class="w-24 h-24 rounded-full mb-4 shadow-soft">
+                    <h3 class="font-serif text-xl text-olive-900 mb-1">Sudha’s Beauty Care & Spa</h3>
+                    <p class="text-olive-600 text-sm mb-1">Since 2006</p>
+                    <p class="text-olive-700 font-light text-sm italic">Founder: Sudha Chandran</p>
+                </div>
+                
+                <!-- Links -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-widest text-olive-900 font-semibold mb-6">Quick Links</h4>
+                    <ul class="space-y-3 font-light text-olive-700 text-sm">
+                        <li><a href="#home" class="hover:text-olive-500 transition-colors">Home</a></li>
+                        <li><a href="#about" class="hover:text-olive-500 transition-colors">About</a></li>
+                        <li><a href="#services" class="hover:text-olive-500 transition-colors">Services</a></li>
+                        <li><a href="#bridal" class="hover:text-olive-500 transition-colors">Bridal Studio</a></li>
+                        <li><a href="#gallery" class="hover:text-olive-500 transition-colors">Gallery</a></li>
+                        <li><a href="#locations" class="hover:text-olive-500 transition-colors">Locations</a></li>
+                        <li><a href="#contact" class="hover:text-olive-500 transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+
+                <!-- Connect -->
+                <div>
+                    <h4 class="text-xs uppercase tracking-widest text-olive-900 font-semibold mb-6">Connect</h4>
+                    <ul class="space-y-3 font-light text-olive-700 text-sm">
+                        <li><span class="block text-xs uppercase text-olive-400 mt-2">Parlour</span></li>
+                        <li><a href="tel:+919744945072" class="hover:text-olive-500 transition-colors">+91 97449 45072</a></li>
+                        <li><a href="#" class="ig-parlour-link hover:text-olive-500 transition-colors">@sudhasbeautycarespa</a></li>
+                        
+                        <li><span class="block text-xs uppercase text-olive-400 mt-4">Bridal</span></li>
+                        <li><a href="tel:+919778592280" class="hover:text-olive-500 transition-colors">+91 97785 92280</a></li>
+                        <li><a href="#" class="ig-bridal-link hover:text-olive-500 transition-colors">@sudhas_bridal_studio</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-olive-200 pt-8 flex justify-center text-center text-xs font-light text-olive-500 uppercase tracking-wider">
+                <p>&copy; 2026 Sudha’s Beauty Care & Spa. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="#" id="floating-whatsapp" target="_blank" class="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-soft hover:shadow-soft-hover hover:scale-110 transition-all duration-300 group">
+        <i class="ph ph-whatsapp-logo text-3xl"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
