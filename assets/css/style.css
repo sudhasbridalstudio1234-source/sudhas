@@ -85,6 +85,49 @@ html {
     clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
+/* --- HUMANIZED DESIGN & COLOUR ANIMATIONS --- */
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.bg-animated-gradient {
+    background: linear-gradient(-45deg, #f8f6f0, #eef1eb, #fcfcfb, #d7ded1);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes floatOrganic {
+    0% { transform: translateY(0) rotate(0deg); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    50% { transform: translateY(-10px) rotate(2deg); border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+    100% { transform: translateY(0) rotate(0deg); border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+}
+
+.blob-shape {
+    animation: floatOrganic 10s ease-in-out infinite;
+}
+
+/* Service Card Arch */
+.arch-card {
+    border-radius: 8px 8px 8px 8px; /* Fallback */
+    border-top-left-radius: 120px;
+    border-top-right-radius: 120px;
+}
+.arch-image {
+    border-top-left-radius: 110px;
+    border-top-right-radius: 110px;
+}
+
+/* Warm hover shifts */
+.hover-warm-shift {
+    transition: background-color 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), box-shadow 0.8s var(--ease-premium);
+}
+.hover-warm-shift:hover {
+    background-color: #f3f0e8; /* slightly warmer cream */
+}
+
 .delay-100 {
     transition-delay: 100ms;
 }
