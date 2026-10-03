@@ -169,23 +169,16 @@ lightbox.addEventListener('click', (e) => {
 function initForms() {
     const form = document.getElementById('appointmentForm');
     
-    // Toggle service type (Parlour vs Bridal) to determine target WA number
-    const enquiryTypeInputs = document.querySelectorAll('input[name="enquiry_type"]');
-    let targetWaNumber = CONFIG.WHATSAPP_PARLOUR;
-
-    enquiryTypeInputs.forEach(input => {
-        input.addEventListener('change', (e) => {
-            if(e.target.value === 'bridal') {
-                targetWaNumber = CONFIG.WHATSAPP_BRIDAL;
-            } else {
-                targetWaNumber = CONFIG.WHATSAPP_PARLOUR;
-            }
-        });
-    });
-
     if (form) {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            
+            // Determine target WA number based on currently checked radio button
+            let targetWaNumber = CONFIG.WHATSAPP_PARLOUR;
+            const bridalRadio = document.querySelector('input[name="enquiry_type"][value="bridal"]');
+            if (bridalRadio && bridalRadio.checked) {
+                targetWaNumber = CONFIG.WHATSAPP_BRIDAL;
+            }
             
             const name = document.getElementById('name').value.trim();
             const phone = document.getElementById('phone').value.trim();
