@@ -19,10 +19,15 @@ html {
 }
 
 /* Animations */
+:root {
+    --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-slow: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(30px);
+        transform: translateY(40px);
     }
     to {
         opacity: 1;
@@ -40,23 +45,44 @@ html {
 }
 
 .animate-fade-up {
-    animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeInUp 1.2s var(--ease-premium) forwards;
 }
 
 .animate-fade-in {
-    animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: fadeIn 1.5s var(--ease-slow) forwards;
 }
 
 /* Scroll Reveal Classes */
 .scroll-reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(40px) scale(0.98);
+    transition: opacity 1.2s var(--ease-premium), transform 1.2s var(--ease-premium);
+    will-change: opacity, transform;
 }
 
 .scroll-reveal.revealed {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+}
+
+.delay-100 {
+    transition-delay: 150ms;
+}
+
+.delay-200 {
+    transition-delay: 300ms;
+}
+
+/* Premium Image Reveal */
+.image-reveal {
+    clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0 100%);
+    transition: clip-path 1.5s var(--ease-slow);
+    will-change: clip-path;
+}
+
+.scroll-reveal.revealed.image-reveal,
+.scroll-reveal.revealed .image-reveal {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .delay-100 {
