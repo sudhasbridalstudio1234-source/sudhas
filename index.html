@@ -131,30 +131,49 @@
         </div>
     </nav>
 
-    <!-- Cinematic Video Hero Section -->
-    <section id="home" class="relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-40 lg:pb-32 min-h-[90vh] flex items-center overflow-hidden">
-        <!-- Background Image -->
-        <img src="assets/images/hero_bg.jpg" alt="Sudha's Beauty Care Hero" class="hero-image absolute inset-0 w-full h-full object-cover z-0">
-        <!-- Overlay -->
-        <div class="hero-overlay absolute inset-0 z-0"></div>
+    <!-- Hero Section -->
+    <section id="home" class="relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28 min-h-[90vh] flex items-center bg-olive-900 overflow-hidden">
+        <!-- Mobile Background Image & Overlay -->
+        <img src="assets/images/hero_bg.jpg" alt="Sudha's Beauty Care Hero" class="lg:hidden absolute inset-0 w-full h-full object-cover object-[center_top] z-0">
+        <div class="lg:hidden absolute inset-0 z-0 bg-olive-900/65"></div>
+
+        <!-- Desktop Ambient Glow Effects -->
+        <div class="hidden lg:block absolute -right-20 -top-20 w-[600px] h-[600px] bg-olive-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="hidden lg:block absolute left-10 -bottom-20 w-[500px] h-[500px] bg-olive-700/20 rounded-full blur-[100px] pointer-events-none"></div>
 
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full relative z-10">
-            <div class="max-w-2xl lg:max-w-xl xl:max-w-2xl animate-fade-up">
-                <span class="block text-cream text-sm md:text-base uppercase tracking-[0.2em] mb-4 font-medium opacity-90">Established Since 2006</span>
-                <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight mb-6 text-shadow">
-                    Beauty, Care & <br/> Confidence — <span class="italic font-light">Since 2006</span>
-                </h1>
-                <p class="text-cream-light text-lg md:text-xl font-light mb-10 opacity-90 max-w-2xl">
-                    Professional beauty, hair, skin and wellness care for ladies & kids, with two convenient locations in Mananthavady.
-                </p>
-                <div class="flex flex-col sm:flex-row gap-4 justify-start mb-10">
-                    <a href="#contact" class="px-8 py-4 bg-cream text-olive-900 text-sm uppercase tracking-widest rounded-full hover:bg-white transition-colors shadow-soft font-medium text-center">Book an Appointment</a>
-                    <a href="#services" class="px-8 py-4 border border-cream/50 text-white text-sm uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors text-center backdrop-blur-sm">Explore Services</a>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+                
+                <!-- Left Column: Content -->
+                <div class="lg:col-span-7 xl:col-span-7 animate-fade-up">
+                    <span class="block text-cream text-sm md:text-base uppercase tracking-[0.2em] mb-4 font-medium opacity-90">Established Since 2006</span>
+                    <h1 class="font-serif text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white leading-tight mb-6 text-shadow">
+                        Beauty, Care & <br/> Confidence — <span class="italic font-light">Since 2006</span>
+                    </h1>
+                    <p class="text-cream-light text-lg md:text-xl font-light mb-10 opacity-90 max-w-2xl">
+                        Professional beauty, hair, skin and wellness care for ladies & kids, with two convenient locations in Mananthavady.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-start mb-10">
+                        <a href="#contact" class="px-8 py-4 bg-cream text-olive-900 text-sm uppercase tracking-widest rounded-full hover:bg-white transition-colors shadow-soft font-medium text-center">Book an Appointment</a>
+                        <a href="#services" class="px-8 py-4 border border-cream/50 text-white text-sm uppercase tracking-widest rounded-full hover:bg-white/10 transition-colors text-center backdrop-blur-sm">Explore Services</a>
+                    </div>
+                    <div class="text-xs md:text-sm text-cream/80 tracking-wider uppercase flex items-center gap-3">
+                        <span class="w-8 h-px bg-cream/50"></span>
+                        20 Years of Experience • Ladies & Kids • Mananthavady
+                    </div>
                 </div>
-                <div class="text-xs md:text-sm text-cream/80 tracking-wider uppercase flex items-center gap-3">
-                    <span class="w-8 h-px bg-cream/50"></span>
-                    20 Years of Experience • Ladies & Kids • Mananthavady
+
+                <!-- Right Column: Full Uncropped Portrait (Desktop View) -->
+                <div class="hidden lg:flex lg:col-span-5 xl:col-span-5 justify-center items-center scroll-reveal delay-200">
+                    <div class="relative w-full max-w-md xl:max-w-lg">
+                        <!-- Ambient aura behind image -->
+                        <div class="absolute -inset-4 bg-olive-500/25 rounded-3xl blur-2xl -z-10"></div>
+                        <div class="rounded-3xl overflow-hidden shadow-2xl border-8 border-cream/20 bg-olive-800">
+                            <img src="assets/images/hero_bg.jpg" alt="Sudha’s Beauty Care" class="w-full h-auto max-h-[75vh] object-cover object-top block transition-transform duration-1000 hover:scale-105">
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -403,68 +422,68 @@
                 <p class="text-olive-700 font-light max-w-2xl mx-auto">A glimpse into our salon experience and the beautiful bridal looks we create.</p>
             </div>
             
-            <!-- Premium Masonry Gallery -->
-            <div class="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
+            <!-- Symmetrical Luxury Gallery Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                 
-                <!-- Image 1 (New Bridal) - Arched -->
-                <div class="break-inside-avoid scroll-reveal rounded-t-full overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white arch-image bg-white" onclick="openLightbox('assets/images/gallery_new_1.jpg')">
-                    <img src="assets/images/gallery_new_1.jpg" alt="Premium Bridal Styling" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 1 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white" onclick="openLightbox('assets/images/gallery_new_1.jpg')">
+                    <img src="assets/images/gallery_new_1.jpg" alt="Premium Bridal Styling" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
                 
-                <!-- Image 2 (New Bridal) - Rounded -->
-                <div class="break-inside-avoid scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_2.jpg')">
-                    <img src="assets/images/gallery_new_2.jpg" alt="Bridal Look" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 2 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_2.jpg')">
+                    <img src="assets/images/gallery_new_2.jpg" alt="Bridal Look" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 3 (New Bridal) - Rounded -->
-                <div class="break-inside-avoid scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-200" onclick="openLightbox('assets/images/gallery_new_3.jpg')">
-                    <img src="assets/images/gallery_new_3.jpg" alt="Bridal Portrait" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 3 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-200" onclick="openLightbox('assets/images/gallery_new_3.jpg')">
+                    <img src="assets/images/gallery_new_3.jpg" alt="Bridal Portrait" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 4 (New Bridal) - Arched -->
-                <div class="break-inside-avoid scroll-reveal rounded-t-full overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white arch-image bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_4.jpg')">
-                    <img src="assets/images/gallery_new_4.jpg" alt="Bridal Makeover Details" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 4 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_4.jpg')">
+                    <img src="assets/images/gallery_new_4.jpg" alt="Bridal Makeover Details" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 5 (New Bridal) - Rounded -->
-                <div class="break-inside-avoid scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white" onclick="openLightbox('assets/images/gallery_new_5.jpg')">
-                    <img src="assets/images/gallery_new_5.jpg" alt="Bridal Perfection" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 5 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white" onclick="openLightbox('assets/images/gallery_new_5.jpg')">
+                    <img src="assets/images/gallery_new_5.jpg" alt="Bridal Perfection" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 6 (Existing Bridal) - Arched -->
-                <div class="break-inside-avoid scroll-reveal rounded-t-full overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white arch-image bg-white delay-200" onclick="openLightbox('assets/images/photo3.jpg')">
-                    <img src="assets/images/photo3.jpg" alt="Salon Excellence" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 6 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-200" onclick="openLightbox('assets/images/photo3.jpg')">
+                    <img src="assets/images/photo3.jpg" alt="Salon Excellence" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 7 (Wedding Couple) - Arched -->
-                <div class="break-inside-avoid scroll-reveal rounded-t-full overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white arch-image bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_6.jpg')">
-                    <img src="assets/images/gallery_new_6.jpg" alt="Traditional Wedding Couple" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 7 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-100" onclick="openLightbox('assets/images/gallery_new_6.jpg')">
+                    <img src="assets/images/gallery_new_6.jpg" alt="Traditional Wedding Couple" class="w-full h-full object-cover object-top transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
                 </div>
 
-                <!-- Image 8 (Modern Makeover) - Rounded -->
-                <div class="break-inside-avoid scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-200" onclick="openLightbox('assets/images/gallery_new_7.jpg')">
-                    <img src="assets/images/gallery_new_7.jpg" alt="Contemporary Glamour Makeover" class="w-full h-auto transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+                <!-- Image 8 -->
+                <div class="aspect-[3/4] scroll-reveal rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[6px] border-white bg-white delay-200" onclick="openLightbox('assets/images/gallery_new_7.jpg')">
+                    <img src="assets/images/gallery_new_7.jpg" alt="Contemporary Glamour Makeover" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
                     <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
                     </div>
