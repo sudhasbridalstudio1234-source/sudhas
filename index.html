@@ -3,8 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sudha’s Beauty Care & Spa | Beauty & Bridal Care Since 2006</title>
-    <meta name="description" content="Sudha’s Beauty Care & Spa in Mananthavady, Wayanad — professional beauty, hair, skin, body and bridal services for ladies and kids, with two convenient locations.">
+    <title>Sudha’s Beauty Care &amp; Spa | Bridal Studio in Mananthavady, Wayanad | Since 2006</title>
+    
+    <!-- Core SEO Meta Tags -->
+    <meta name="description" content="Sudha’s Beauty Care &amp; Spa and Sudha’s Bridal Studio in Mananthavady, Wayanad. 20+ years of expertise offering bridal makeovers, skin care, hair treatments, and wellness therapies exclusively for ladies &amp; kids across two prime locations.">
+    <meta name="keywords" content="Sudha's Beauty Care, Sudha's Bridal Studio, beauty parlour in Mananthavady, bridal makeup artist Wayanad, best salon in Mananthavady, bridal makeover Kerala, ladies beauty parlour Wayanad, Sudha Chandran, Anjana Vipin, hair spa, skin care, facial, pre bridal packages, saree draping Mananthavady">
+    <meta name="author" content="Sudha’s Beauty Care &amp; Spa">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://sudhasbridalstudio1234-source.github.io/sudhas/">
+
+    <!-- Favicon & Touch Icons -->
+    <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg">
+    <link rel="apple-touch-icon" href="assets/images/logo.jpg">
+    <meta name="theme-color" content="#1e2d1e">
+
+    <!-- Local SEO Geo Meta Tags (Wayanad, Kerala) -->
+    <meta name="geo.region" content="IN-KL">
+    <meta name="geo.placename" content="Mananthavady, Wayanad, Kerala">
+    <meta name="geo.position" content="11.8028;76.0034">
+    <meta name="ICBM" content="11.8028, 76.0034">
+
+    <!-- Open Graph (Facebook, WhatsApp, Instagram Sharing) -->
+    <meta property="og:type" content="business.business">
+    <meta property="og:site_name" content="Sudha’s Beauty Care &amp; Spa">
+    <meta property="og:title" content="Sudha’s Beauty Care &amp; Spa | Bridal Studio in Mananthavady, Wayanad">
+    <meta property="og:description" content="Over 20 years of trusted beauty and bridal services exclusively for ladies &amp; kids in Mananthavady, Kerala. Book your appointment today.">
+    <meta property="og:url" content="https://sudhasbridalstudio1234-source.github.io/sudhas/">
+    <meta property="og:image" content="https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/hero_bg.jpg">
+    <meta property="og:image:alt" content="Sudha’s Bridal Studio &amp; Beauty Care">
+    <meta property="og:locale" content="en_IN">
+
+    <!-- Twitter Card Meta -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sudha’s Beauty Care &amp; Spa | Bridal Studio in Mananthavady">
+    <meta name="twitter:description" content="Premier beauty, wellness &amp; bridal makeovers for ladies and kids in Mananthavady, Wayanad. Since 2006.">
+    <meta name="twitter:image" content="https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/hero_bg.jpg">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -69,27 +102,101 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 
-    <!-- Schema.org for Local Business -->
+    <!-- Schema.org Multi-Entity Local Business & Bridal Studio Structured Data -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "BeautySalon",
-      "name": "Sudha’s Beauty Care & Spa",
-      "image": "assets/images/logo.jpg",
-      "telephone": "+919744945072",
-      "description": "Professional beauty, hair, skin and wellness care for ladies & kids in Mananthavady.",
-      "foundingDate": "2006",
-      "founder": {
-          "@type": "Person",
-          "name": "Sudha Chandran"
-      },
-      "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Mananthavady",
-          "addressRegion": "Kerala",
-          "postalCode": "670645",
-          "addressCountry": "IN"
-      }
+      "@graph": [
+        {
+          "@type": ["BeautySalon", "DaySpa"],
+          "@id": "https://sudhasbridalstudio1234-source.github.io/sudhas/#parlour",
+          "name": "Sudha’s Beauty Care & Spa",
+          "alternateName": "Sudhas Beauty Parlour Mananthavady",
+          "url": "https://sudhasbridalstudio1234-source.github.io/sudhas/",
+          "logo": "https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/logo.jpg",
+          "image": "https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/hero_bg.jpg",
+          "description": "Established in 2006, Sudha’s Beauty Care & Spa provides professional beauty, hair, skin, and wellness treatments exclusively for ladies and kids across two prime locations in Mananthavady, Wayanad.",
+          "telephone": "+919744945072",
+          "priceRange": "₹₹",
+          "currenciesAccepted": "INR",
+          "paymentAccepted": "Cash, UPI, Credit Card, Debit Card",
+          "foundingDate": "2006",
+          "founder": {
+            "@type": "Person",
+            "name": "Sudha Chandran",
+            "jobTitle": "Founder & Master Beautician"
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              "opens": "09:00",
+              "closes": "19:00"
+            }
+          ],
+          "department": [
+            {
+              "@type": "BeautySalon",
+              "name": "Sudha’s Beauty Care & Spa - Calicut Road Branch",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "Ground Floor, Sitara Uniforms Building, Calicut Road",
+                "addressLocality": "Mananthavady",
+                "addressRegion": "Kerala",
+                "postalCode": "670645",
+                "addressCountry": "IN"
+              },
+              "telephone": "+919744945072",
+              "hasMap": "https://maps.app.goo.gl/8uRxvdmn4kHZHa639"
+            },
+            {
+              "@type": "BeautySalon",
+              "name": "Sudha’s Beauty Care & Spa - Valliyoorkavu Road Branch",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "City Square Building, Near MY G Digital Hub, Valliyoorkavu Road",
+                "addressLocality": "Mananthavady",
+                "addressRegion": "Kerala",
+                "postalCode": "670645",
+                "addressCountry": "IN"
+              },
+              "telephone": "+919744945072",
+              "hasMap": "https://maps.app.goo.gl/ZwJZYNDMdUWYPuZ4A"
+            }
+          ],
+          "sameAs": [
+            "https://www.instagram.com/sudhasbeautycarespa"
+          ]
+        },
+        {
+          "@type": "BeautySalon",
+          "@id": "https://sudhasbridalstudio1234-source.github.io/sudhas/#bridal",
+          "name": "Sudha’s Bridal Studio",
+          "url": "https://sudhasbridalstudio1234-source.github.io/sudhas/#bridal",
+          "image": "https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/bridal_service_main.jpg",
+          "description": "Specialized bridal makeover and styling division offering bridal makeup, pre-bridal packages, saree pre-pleating, and freelance on-location services.",
+          "telephone": "+919778592280",
+          "priceRange": "₹₹₹",
+          "currenciesAccepted": "INR",
+          "paymentAccepted": "Cash, UPI, Credit Card, Debit Card",
+          "founder": {
+            "@type": "Person",
+            "name": "Anjana Vipin",
+            "jobTitle": "Founder & Bridal Specialist"
+          },
+          "openingHoursSpecification": [
+            {
+              "@type": "OpeningHoursSpecification",
+              "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+              "opens": "00:00",
+              "closes": "23:59"
+            }
+          ],
+          "sameAs": [
+            "https://www.instagram.com/sudhas_brida_lstudio"
+          ]
+        }
+      ]
     }
     </script>
 </head>
@@ -252,7 +359,7 @@
                 <!-- Founder 1 -->
                 <div class="text-center scroll-reveal flex flex-col items-center">
                     <div class="w-64 h-64 md:w-80 md:h-80 rounded-t-full overflow-hidden shadow-soft mb-8 border-8 border-cream arch-image image-reveal relative group bg-olive-100">
-                        <img src="assets/images/sudha_chandran.jpg" alt="Sudha Chandran" class="w-full h-full object-cover object-[center_top] transition-transform duration-1000 group-hover:scale-105">
+                        <img src="assets/images/sudha_chandran.jpg" alt="Sudha Chandran - Founder of Sudha’s Beauty Care &amp; Spa Mananthavady" class="w-full h-full object-cover object-[center_top] transition-transform duration-1000 group-hover:scale-105">
                         <div class="absolute inset-0 bg-olive-900/10 group-hover:bg-olive-900/0 transition-colors duration-500"></div>
                     </div>
                     <h3 class="font-serif text-3xl text-olive-900 mb-2">Sudha Chandran</h3>
@@ -266,7 +373,7 @@
                 <!-- Founder 2 -->
                 <div class="text-center scroll-reveal delay-100 flex flex-col items-center">
                     <div class="w-64 h-64 md:w-80 md:h-80 rounded-t-full overflow-hidden shadow-soft mb-8 border-8 border-cream arch-image image-reveal relative group bg-olive-100">
-                        <img src="assets/images/anjana_vipin.jpg" alt="Anjana Vipin" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
+                        <img src="assets/images/anjana_vipin.jpg" alt="Anjana Vipin - Founder of Sudha’s Bridal Studio Mananthavady" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105">
                         <div class="absolute inset-0 bg-olive-900/10 group-hover:bg-olive-900/0 transition-colors duration-500"></div>
                     </div>
                     <h3 class="font-serif text-3xl text-olive-900 mb-2">Anjana Vipin</h3>

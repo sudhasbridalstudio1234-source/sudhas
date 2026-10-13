@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://sudhasbridalstudio1234-source.github.io/sudhas/</loc>
+    <lastmod>2026-10-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/hero_bg.jpg</image:loc>
+      <image:title>Sudha’s Beauty Care &amp; Spa and Bridal Studio Mananthavady</image:title>
+      <image:caption>Premier beauty, wellness and bridal makeover studio in Mananthavady, Wayanad</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/bridal_service_main.jpg</image:loc>
+      <image:title>Sudha’s Bridal Studio Makeover</image:title>
+      <image:caption>Professional bridal makeover services by Anjana Vipin</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/sudha_chandran.jpg</image:loc>
+      <image:title>Sudha Chandran Founder</image:title>
+      <image:caption>Founder of Sudha's Beauty Care and Spa since 2006</image:caption>
+    </image:image>
+    <image:image>
+      <image:loc>https://sudhasbridalstudio1234-source.github.io/sudhas/assets/images/anjana_vipin.jpg</image:loc>
+      <image:title>Anjana Vipin Bridal Founder</image:title>
+      <image:caption>Founder of Sudha's Bridal Studio</image:caption>
+    </image:image>
+  </url>
+</urlset>

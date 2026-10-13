@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sudhasbridalstudio1234-source.github.io/sudhas/sitemap.xml
