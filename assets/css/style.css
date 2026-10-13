@@ -8,14 +8,14 @@ html {
     width: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: #fcfcfb;
+    background: #ffffff;
 }
 ::-webkit-scrollbar-thumb {
-    background: #c3cbb1;
+    background: #b8ccb8;
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #a2b08d;
+    background: #94b394;
 }
 
 /* Animations */
@@ -94,7 +94,7 @@ html {
 }
 
 .bg-animated-gradient {
-    background: linear-gradient(-45deg, #f8f6f0, #eef1eb, #fcfcfb, #d7ded1);
+    background: linear-gradient(-45deg, #ffffff, #f2f7f2, #ffffff, #e6eee6);
     background-size: 400% 400%;
     animation: gradientShift 15s ease infinite;
 }
@@ -120,12 +120,12 @@ html {
     border-top-right-radius: 110px;
 }
 
-/* Warm hover shifts */
+/* Sage hover shifts */
 .hover-warm-shift {
     transition: background-color 0.8s var(--ease-premium), transform 0.8s var(--ease-premium), box-shadow 0.8s var(--ease-premium);
 }
 .hover-warm-shift:hover {
-    background-color: #f3f0e8; /* slightly warmer cream */
+    background-color: #f7faf7; /* soft sage-tinted white */
 }
 
 .delay-100 {
@@ -140,8 +140,8 @@ html {
 .navbar-scrolled {
     padding-top: 0.5rem !important;
     padding-bottom: 0.5rem !important;
-    background-color: rgba(252, 252, 251, 0.98) !important;
-    box-shadow: 0 4px 20px -10px rgba(46, 53, 39, 0.1);
+    background-color: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 0 4px 20px -10px rgba(30, 45, 30, 0.08);
 }
 
 .navbar-scrolled #nav-logo {
@@ -154,7 +154,7 @@ html {
 }
 
 .hero-overlay {
-    background: rgba(46, 53, 39, 0.65);
+    background: rgba(30, 45, 30, 0.65);
 }
 
 @media (min-width: 1024px) {
@@ -163,7 +163,7 @@ html {
     }
     
     .hero-overlay {
-        background: linear-gradient(to right, rgba(26, 31, 23, 0.94) 0%, rgba(26, 31, 23, 0.75) 45%, rgba(26, 31, 23, 0.15) 100%);
+        background: linear-gradient(to right, rgba(20, 32, 20, 0.95) 0%, rgba(20, 32, 20, 0.75) 45%, rgba(20, 32, 20, 0.15) 100%);
     }
 }
 
