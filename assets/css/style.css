@@ -65,6 +65,15 @@ html {
     transform: translateY(0) scale(1);
 }
 
+/* Ensure all gallery cards are immediately visible on mobile */
+@media (max-width: 768px) {
+    #gallery .scroll-reveal {
+        opacity: 1 !important;
+        transform: none !important;
+        visibility: visible !important;
+    }
+}
+
 .delay-100 {
     transition-delay: 150ms;
 }

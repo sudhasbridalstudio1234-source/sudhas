@@ -117,8 +117,8 @@ function initScrollReveal() {
     const revealElements = document.querySelectorAll('.scroll-reveal');
     
     const revealOptions = {
-        threshold: 0.15,
-        rootMargin: "0px 0px -50px 0px"
+        threshold: 0.05,
+        rootMargin: "0px 0px 80px 0px"
     };
 
     const revealObserver = new IntersectionObserver(function(entries, observer) {
