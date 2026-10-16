@@ -256,11 +256,13 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section id="home" class="hero-canvas relative pt-24 pb-16 md:pt-32 md:pb-24 lg:pt-36 lg:pb-28 min-h-[90vh] flex items-center overflow-hidden">
-        <!-- Mobile Background Image & Overlay -->
-        <img src="assets/images/hero_bg.jpg" alt="Sudha's Beauty Care Hero" class="lg:hidden absolute inset-0 w-full h-full object-cover object-[center_top] z-0">
-        <div class="lg:hidden absolute inset-0 z-0 bg-olive-900/65"></div>
+        <!-- High-Definition Hero Background Image & Responsive Luxury Overlay -->
+        <picture class="absolute inset-0 w-full h-full z-0 pointer-events-none">
+            <source srcset="assets/images/hero_bg.webp" type="image/webp">
+            <img src="assets/images/hero_bg.jpg" fetchpriority="high" decoding="sync" alt="Sudha's Beauty Care &amp; Bridal Studio Hero" class="hero-bg-image w-full h-full object-cover">
+        </picture>
+        <div class="hero-bg-overlay absolute inset-0 z-0 pointer-events-none"></div>
 
         <!-- Ambient Luxury Aurora Glows -->
         <div class="hidden lg:block absolute -right-20 -top-20 w-[650px] h-[650px] bg-olive-400/25 rounded-full blur-[110px] pointer-events-none aurora-orb-1"></div>
@@ -300,7 +302,10 @@
                         <!-- Ambient aura behind image -->
                         <div class="absolute -inset-4 bg-olive-500/25 rounded-3xl blur-2xl -z-10"></div>
                         <div class="rounded-3xl overflow-hidden shadow-2xl border-8 border-cream/20 bg-olive-800">
-                            <img src="assets/images/hero_bg.jpg" alt="Sudha’s Beauty Care" class="w-full h-auto max-h-[75vh] object-cover object-top block transition-transform duration-1000 hover:scale-105">
+                            <picture>
+                                <source srcset="assets/images/hero_bg.webp" type="image/webp">
+                                <img src="assets/images/hero_bg.jpg" fetchpriority="high" decoding="async" alt="Sudha’s Beauty Care &amp; Bridal Makeover" class="w-full h-auto max-h-[75vh] object-cover object-top block transition-transform duration-1000 hover:scale-105" style="image-rendering: -webkit-optimize-contrast;">
+                            </picture>
                         </div>
                     </div>
                 </div>

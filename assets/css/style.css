@@ -157,22 +157,43 @@ html {
     height: 3.5rem; /* h-14 */
 }
 
-/* Hero Image Alignment & Responsive Overlay */
-.hero-image {
-    object-position: center 15%;
+/* High-Definition Hero Image & Premium Responsive Overlay */
+.hero-bg-image {
+    object-position: center 12%;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    filter: contrast(1.05) brightness(1.02) saturate(1.05);
 }
 
-.hero-overlay {
-    background: rgba(30, 45, 30, 0.65);
+.hero-bg-overlay {
+    /* Luxury vertical gradient: preserves bride's face, jewelry & smile in full vibrance while darkening text zone */
+    background: linear-gradient(
+        to bottom,
+        rgba(15, 25, 15, 0.25) 0%,
+        rgba(18, 30, 18, 0.42) 35%,
+        rgba(20, 33, 20, 0.78) 70%,
+        rgba(20, 33, 20, 0.92) 100%
+    );
 }
 
 @media (min-width: 1024px) {
-    .hero-image {
-        object-position: 85% 18%;
+    .hero-bg-image {
+        object-position: 85% 15%;
+        opacity: 0.28;
+        filter: contrast(1.06) brightness(1.03) saturate(1.08);
     }
     
-    .hero-overlay {
-        background: linear-gradient(to right, rgba(20, 32, 20, 0.95) 0%, rgba(20, 32, 20, 0.75) 45%, rgba(20, 32, 20, 0.15) 100%);
+    .hero-bg-overlay {
+        /* Subtle fade so ambient background smoothly integrates into hero-canvas on desktop */
+        background: linear-gradient(
+            to right,
+            rgba(20, 33, 20, 0.92) 0%,
+            rgba(20, 33, 20, 0.75) 45%,
+            rgba(20, 33, 20, 0.25) 80%,
+            rgba(20, 33, 20, 0.55) 100%
+        );
     }
 }
 
