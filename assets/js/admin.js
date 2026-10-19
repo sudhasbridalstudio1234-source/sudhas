@@ -1,5 +1,6 @@
 /**
  * Sudha's Beauty Care & Bridal Studio - Gallery Admin Controller
+ * Includes Add, Edit, Delete, Reordering, Cropping & Spotlight Highlighting
  */
 
 // Configuration Defaults
@@ -18,6 +19,13 @@ let tempAddFileData = null;
 let tempAddFileName = null;
 let tempEditFileData = null;
 let pendingDeleteId = null;
+
+// Cropper State
+let cropperInstance = null;
+let cropContext = null; // 'add', 'add-url', 'edit', 'card'
+let cropTargetId = null;
+let currentCropRatio = 0.75; // 3:4 portrait default
+let cropScaleX = 1;
 
 // ========================================================
 // INITIALIZATION
@@ -80,7 +88,6 @@ function handleLogout() {
 // DATA LOADING
 // ========================================================
 async function loadGalleryData() {
-    // 1. Check if there is an uncommitted draft in localStorage
     const savedDraft = localStorage.getItem('sudha_gallery_draft');
     
     try {
@@ -116,16 +123,16 @@ async function loadGalleryData() {
 
 function getBaselineFallbackItems() {
     return [
-        { "id": "gallery-1", "src": "assets/images/gallery_new_1.jpg", "title": "Premium Bridal Styling", "alt": "Premium Bridal Styling", "category": "Bridal Looks", "dateAdded": "2026-10-07" },
-        { "id": "gallery-2", "src": "assets/images/gallery_new_2.jpg", "title": "Bridal Look", "alt": "Bridal Look", "category": "Bridal Looks", "dateAdded": "2026-10-07" },
-        { "id": "gallery-3", "src": "assets/images/gallery_new_3.jpg", "title": "Bridal Portrait", "alt": "Bridal Portrait", "category": "Bridal Looks", "dateAdded": "2026-10-07" },
-        { "id": "gallery-4", "src": "assets/images/gallery_new_4.jpg", "title": "Bridal Makeover Details", "alt": "Bridal Makeover Details", "category": "Bridal Looks", "dateAdded": "2026-10-07" },
-        { "id": "gallery-5", "src": "assets/images/gallery_new_5.jpg", "title": "Bridal Perfection", "alt": "Bridal Perfection", "category": "Bridal Looks", "dateAdded": "2026-10-07" },
-        { "id": "gallery-6", "src": "assets/images/photo3.jpg", "title": "Salon Excellence", "alt": "Salon Excellence", "category": "Salon Moments", "dateAdded": "2026-10-07" },
-        { "id": "gallery-7", "src": "assets/images/gallery_new_6.jpg", "title": "Traditional Wedding Couple", "alt": "Traditional Wedding Couple", "category": "Wedding Couples", "dateAdded": "2026-10-13" },
-        { "id": "gallery-8", "src": "assets/images/gallery_new_7.jpg", "title": "Contemporary Glamour Makeover", "alt": "Contemporary Glamour Makeover", "category": "Bridal Looks", "dateAdded": "2026-10-13" },
-        { "id": "gallery-9", "src": "assets/images/gallery_new_8.jpg", "title": "Traditional Kerala Wedding Couple", "alt": "Traditional Kerala Wedding Couple - Kasavu & Silk Saree", "category": "Wedding Couples", "dateAdded": "2026-10-14" },
-        { "id": "gallery-10", "src": "assets/images/gallery_new_9.jpg", "title": "Traditional Kerala Bridal Makeover", "alt": "Traditional Kerala Bridal Makeover - Red & Green Silk Saree", "category": "Bridal Looks", "dateAdded": "2026-10-16" }
+        { "id": "gallery-1", "src": "assets/images/gallery_new_1.jpg", "title": "Premium Bridal Styling", "alt": "Premium Bridal Styling", "category": "Bridal Looks", "highlight": true, "dateAdded": "2026-10-07" },
+        { "id": "gallery-2", "src": "assets/images/gallery_new_2.jpg", "title": "Bridal Look", "alt": "Bridal Look", "category": "Bridal Looks", "highlight": false, "dateAdded": "2026-10-07" },
+        { "id": "gallery-3", "src": "assets/images/gallery_new_3.jpg", "title": "Bridal Portrait", "alt": "Bridal Portrait", "category": "Bridal Looks", "highlight": false, "dateAdded": "2026-10-07" },
+        { "id": "gallery-4", "src": "assets/images/gallery_new_4.jpg", "title": "Bridal Makeover Details", "alt": "Bridal Makeover Details", "category": "Bridal Looks", "highlight": false, "dateAdded": "2026-10-07" },
+        { "id": "gallery-5", "src": "assets/images/gallery_new_5.jpg", "title": "Bridal Perfection", "alt": "Bridal Perfection", "category": "Bridal Looks", "highlight": false, "dateAdded": "2026-10-07" },
+        { "id": "gallery-6", "src": "assets/images/photo3.jpg", "title": "Salon Excellence", "alt": "Salon Excellence", "category": "Salon Moments", "highlight": false, "dateAdded": "2026-10-07" },
+        { "id": "gallery-7", "src": "assets/images/gallery_new_6.jpg", "title": "Traditional Wedding Couple", "alt": "Traditional Wedding Couple", "category": "Wedding Couples", "highlight": false, "dateAdded": "2026-10-13" },
+        { "id": "gallery-8", "src": "assets/images/gallery_new_7.jpg", "title": "Contemporary Glamour Makeover", "alt": "Contemporary Glamour Makeover", "category": "Bridal Looks", "highlight": false, "dateAdded": "2026-10-13" },
+        { "id": "gallery-9", "src": "assets/images/gallery_new_8.jpg", "title": "Traditional Kerala Wedding Couple", "alt": "Traditional Kerala Wedding Couple - Kasavu & Silk Saree", "category": "Wedding Couples", "highlight": true, "dateAdded": "2026-10-14" },
+        { "id": "gallery-10", "src": "assets/images/gallery_new_9.jpg", "title": "Traditional Kerala Bridal Makeover", "alt": "Traditional Kerala Bridal Makeover - Red & Green Silk Saree", "category": "Bridal Looks", "highlight": true, "dateAdded": "2026-10-16" }
     ];
 }
 
@@ -139,7 +146,15 @@ function renderGallery() {
 
     // Filter & Search
     let filtered = galleryItems.filter(item => {
-        const matchesCategory = (currentFilter === 'all') || (item.category === currentFilter);
+        let matchesCategory = false;
+        if (currentFilter === 'all') {
+            matchesCategory = true;
+        } else if (currentFilter === 'highlighted') {
+            matchesCategory = item.highlight === true;
+        } else {
+            matchesCategory = (item.category === currentFilter);
+        }
+
         const matchesSearch = !searchTerm || 
             (item.title && item.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (item.alt && item.alt.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -153,31 +168,55 @@ function renderGallery() {
         emptyState.classList.add('hidden');
     }
 
-    filtered.forEach((item, index) => {
+    filtered.forEach((item) => {
         const actualIndex = galleryItems.findIndex(i => i.id === item.id);
         const card = document.createElement('div');
-        card.className = "bg-white rounded-2xl border border-olive-100 shadow-soft overflow-hidden flex flex-col group transition-all hover:shadow-soft-hover";
+        const isHighlight = item.highlight === true;
+
+        card.className = `bg-white rounded-2xl border ${isHighlight ? 'border-amber-300 ring-2 ring-amber-200/60' : 'border-olive-100'} shadow-soft overflow-hidden flex flex-col group transition-all hover:shadow-soft-hover relative`;
         
-        // Image display
         const displaySrc = item.pendingFileData || item.src;
         
         card.innerHTML = `
             <div class="aspect-[3/4] bg-olive-100 relative overflow-hidden">
                 <img src="${displaySrc}" alt="${escapeHtml(item.alt || item.title)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute top-2.5 left-2.5 px-2.5 py-1 bg-olive-900/80 backdrop-blur-sm rounded-lg text-white text-[10px] uppercase tracking-wider font-semibold">
+                
+                <!-- Order Badge -->
+                <div class="absolute top-2.5 left-2.5 px-2 py-0.5 bg-olive-900/80 backdrop-blur-sm rounded-lg text-white text-[10px] uppercase tracking-wider font-semibold">
                     #${actualIndex + 1}
                 </div>
-                <div class="absolute top-2.5 right-2.5 px-2 py-1 bg-white/90 backdrop-blur-sm rounded-lg text-olive-800 text-[10px] font-medium shadow-xs">
+
+                <!-- Spotlight Highlight Badge -->
+                ${isHighlight ? `
+                    <div class="absolute top-2.5 left-11 px-2 py-0.5 bg-amber-500/90 backdrop-blur-sm rounded-lg text-white text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 shadow-sm">
+                        <i class="ph-fill ph-star text-xs"></i> Spotlight
+                    </div>
+                ` : ''}
+
+                <!-- Category Badge -->
+                <div class="absolute top-2.5 right-2.5 px-2 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-olive-800 text-[10px] font-medium shadow-xs">
                     ${escapeHtml(item.category || 'Bridal Looks')}
                 </div>
-                ${item.pendingFileData ? '<div class="absolute bottom-2 left-2 px-2 py-0.5 bg-amber-500 text-white text-[9px] font-bold rounded uppercase tracking-wider">New Upload</div>' : ''}
+
+                <!-- Quick Crop Overlay Button -->
+                <button onclick="openCropperFromCard('${item.id}')" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 bg-olive-900/85 hover:bg-olive-900 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm backdrop-blur-sm" title="Crop &amp; Frame this photo">
+                    <i class="ph ph-crop text-xs"></i> Crop
+                </button>
+
+                ${item.pendingFileData ? '<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded uppercase tracking-wider shadow-sm">Pending Upload</div>' : ''}
             </div>
 
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
                 <div>
-                    <h3 class="font-serif text-lg text-olive-900 font-semibold leading-snug line-clamp-1" title="${escapeHtml(item.title)}">
-                        ${escapeHtml(item.title)}
-                    </h3>
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="font-serif text-lg text-olive-900 font-semibold leading-snug line-clamp-1" title="${escapeHtml(item.title)}">
+                            ${escapeHtml(item.title)}
+                        </h3>
+                        <!-- Star Toggle Button -->
+                        <button onclick="toggleHighlight('${item.id}')" class="p-1 rounded-md transition-colors ${isHighlight ? 'text-amber-500 hover:text-amber-600' : 'text-olive-300 hover:text-amber-500'}" title="${isHighlight ? 'Remove Spotlight highlight' : 'Highlight in Spotlight'}">
+                            <i class="${isHighlight ? 'ph-fill ph-star' : 'ph ph-star'} text-lg"></i>
+                        </button>
+                    </div>
                     <p class="text-[11px] text-olive-600 font-light line-clamp-2 mt-1 leading-relaxed" title="${escapeHtml(item.alt || '')}">
                         <strong>Alt:</strong> ${escapeHtml(item.alt || 'No alt text provided')}
                     </p>
@@ -186,20 +225,20 @@ function renderGallery() {
                 <div class="pt-3 border-t border-olive-100 flex items-center justify-between">
                     <!-- Move Up / Down Reordering -->
                     <div class="flex items-center gap-1">
-                        <button onclick="moveItem(${actualIndex}, -1)" ${actualIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-olive-50 text-olive-700"'} class="w-7 h-7 rounded-lg border border-olive-200 flex items-center justify-center transition-colors" title="Move Up (Earlier)">
+                        <button onclick="moveItem(${actualIndex}, -1)" ${actualIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-olive-50 text-olive-700"'} class="w-7 h-7 rounded-lg border border-olive-200 flex items-center justify-center transition-colors" title="Move Up">
                             <i class="ph ph-arrow-up text-xs"></i>
                         </button>
-                        <button onclick="moveItem(${actualIndex}, 1)" ${actualIndex === galleryItems.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-olive-50 text-olive-700"'} class="w-7 h-7 rounded-lg border border-olive-200 flex items-center justify-center transition-colors" title="Move Down (Later)">
+                        <button onclick="moveItem(${actualIndex}, 1)" ${actualIndex === galleryItems.length - 1 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-olive-50 text-olive-700"'} class="w-7 h-7 rounded-lg border border-olive-200 flex items-center justify-center transition-colors" title="Move Down">
                             <i class="ph ph-arrow-down text-xs"></i>
                         </button>
                     </div>
 
-                    <!-- Edit / Delete -->
+                    <!-- Edit / Crop / Delete -->
                     <div class="flex items-center gap-1.5">
                         <button onclick="openEditModal('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs font-medium flex items-center gap-1 transition-colors" title="Edit photo">
                             <i class="ph ph-pencil-simple text-sm"></i> Edit
                         </button>
-                        <button onclick="openDeleteModal('${item.id}')" class="w-8 h-8 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Delete photo">
+                        <button onclick="openDeleteModal('${item.id}')" class="w-7 h-7 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Delete photo">
                             <i class="ph ph-trash text-sm"></i>
                         </button>
                     </div>
@@ -213,15 +252,18 @@ function renderGallery() {
 
 function updateStats() {
     const total = galleryItems.length;
+    const highlighted = galleryItems.filter(i => i.highlight === true).length;
     const bridal = galleryItems.filter(i => (i.category || '').toLowerCase().includes('bridal')).length;
     const couples = galleryItems.filter(i => (i.category || '').toLowerCase().includes('couple')).length;
     const salon = galleryItems.filter(i => (i.category || '').toLowerCase().includes('salon')).length;
 
     document.getElementById('stat-total').innerText = total;
+    document.getElementById('stat-highlighted').innerText = highlighted;
     document.getElementById('stat-bridal').innerText = bridal;
     document.getElementById('stat-couples').innerText = couples;
 
     document.getElementById('count-all').innerText = total;
+    document.getElementById('count-highlighted').innerText = highlighted;
     document.getElementById('count-bridal').innerText = bridal;
     document.getElementById('count-couples').innerText = couples;
     document.getElementById('count-salon').innerText = salon;
@@ -248,9 +290,9 @@ function setFilter(filter) {
     currentFilter = filter;
     document.querySelectorAll('.filter-btn').forEach(btn => {
         if (btn.getAttribute('data-filter') === filter) {
-            btn.className = "filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-olive-900 text-white whitespace-nowrap";
+            btn.className = "filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-olive-900 text-white whitespace-nowrap flex items-center gap-1";
         } else {
-            btn.className = "filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap";
+            btn.className = "filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap flex items-center gap-1";
         }
     });
     renderGallery();
@@ -259,6 +301,21 @@ function setFilter(filter) {
 function handleSearch(term) {
     searchTerm = term.trim();
     renderGallery();
+}
+
+// ========================================================
+// HIGHLIGHT / SPOTLIGHT TOGGLE
+// ========================================================
+function toggleHighlight(id) {
+    const item = galleryItems.find(i => i.id === id);
+    if (!item) return;
+
+    item.highlight = !item.highlight;
+    isDirty = true;
+    updateSyncStatus();
+    updateStats();
+    renderGallery();
+    showToast(item.highlight ? "Photo added to Spotlight!" : "Spotlight removed", item.highlight ? "success" : "info");
 }
 
 // ========================================================
@@ -279,10 +336,186 @@ function moveItem(index, direction) {
 }
 
 // ========================================================
+// CROPPER ENGINE (CROPPER.JS)
+// ========================================================
+function openCropper(imageSrc, context, targetId = null) {
+    cropContext = context;
+    cropTargetId = targetId;
+    currentCropRatio = 0.75; // Default 3:4 portrait
+    cropScaleX = 1;
+
+    const modal = document.getElementById('crop-modal');
+    const imgEl = document.getElementById('cropper-image');
+
+    // Destroy existing instance if any
+    if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+    }
+
+    imgEl.src = imageSrc;
+    modal.classList.remove('hidden');
+
+    // Initialize Cropper when image loads
+    imgEl.onload = () => {
+        cropperInstance = new Cropper(imgEl, {
+            aspectRatio: currentCropRatio,
+            viewMode: 1,
+            autoCropArea: 0.95,
+            responsive: true,
+            movable: true,
+            rotatable: true,
+            scalable: true,
+            zoomable: true
+        });
+    };
+    if (imgEl.complete && imgEl.naturalWidth > 0) {
+        imgEl.onload();
+    }
+
+    updateCropRatioButtons();
+}
+
+function setCropRatio(ratio) {
+    currentCropRatio = ratio;
+    if (cropperInstance) {
+        cropperInstance.setAspectRatio(ratio);
+    }
+    updateCropRatioButtons();
+}
+
+function updateCropRatioButtons() {
+    const buttons = {
+        'ratio-3-4': currentCropRatio === 0.75,
+        'ratio-1-1': currentCropRatio === 1,
+        'ratio-4-3': Math.abs(currentCropRatio - 1.333) < 0.05,
+        'ratio-free': isNaN(currentCropRatio)
+    };
+
+    for (const [id, active] of Object.entries(buttons)) {
+        const btn = document.getElementById(id);
+        if (btn) {
+            if (active) {
+                btn.className = "crop-ratio-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-olive-900 text-white";
+            } else {
+                btn.className = "crop-ratio-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-cream text-olive-800 hover:bg-cream-dark";
+            }
+        }
+    }
+}
+
+function rotateCrop(degree) {
+    if (cropperInstance) {
+        cropperInstance.rotate(degree);
+    }
+}
+
+function flipCropX() {
+    if (cropperInstance) {
+        cropScaleX = -cropScaleX;
+        cropperInstance.scaleX(cropScaleX);
+    }
+}
+
+function zoomCrop(delta) {
+    if (cropperInstance) {
+        cropperInstance.zoom(delta);
+    }
+}
+
+function resetCrop() {
+    if (cropperInstance) {
+        cropperInstance.reset();
+        cropScaleX = 1;
+    }
+}
+
+function closeCropModal() {
+    if (cropperInstance) {
+        cropperInstance.destroy();
+        cropperInstance = null;
+    }
+    document.getElementById('crop-modal').classList.add('hidden');
+}
+
+function applyCrop() {
+    if (!cropperInstance) return;
+
+    const canvas = cropperInstance.getCroppedCanvas({
+        maxWidth: 1600,
+        maxHeight: 2000,
+        imageSmoothingEnabled: true,
+        imageSmoothingQuality: 'high'
+    });
+
+    if (!canvas) {
+        alert("Failed to crop image.");
+        return;
+    }
+
+    const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+    if (cropContext === 'add') {
+        tempAddFileData = croppedDataUrl;
+        document.getElementById('add-preview-img').src = croppedDataUrl;
+    } else if (cropContext === 'add-url') {
+        tempAddFileData = croppedDataUrl;
+        document.getElementById('add-url-preview-img').src = croppedDataUrl;
+    } else if (cropContext === 'edit') {
+        tempEditFileData = {
+            dataUri: croppedDataUrl,
+            filename: "cropped_" + Date.now() + ".jpg"
+        };
+        document.getElementById('edit-preview-img').src = croppedDataUrl;
+    } else if (cropContext === 'card') {
+        const item = galleryItems.find(i => i.id === cropTargetId);
+        if (item) {
+            const cleanName = "gallery_cropped_" + Date.now() + ".jpg";
+            item.src = `assets/images/gallery/${cleanName}`;
+            item.pendingFileData = croppedDataUrl;
+            isDirty = true;
+            updateSyncStatus();
+            renderGallery();
+        }
+    }
+
+    closeCropModal();
+    showToast("Photo cropped successfully!", "success");
+}
+
+function openCropperFromAdd() {
+    if (tempAddFileData) {
+        openCropper(tempAddFileData, 'add');
+    }
+}
+
+function openCropperFromAddUrl() {
+    const url = document.getElementById('add-url-input').value.trim();
+    if (url) {
+        openCropper(url, 'add-url');
+    }
+}
+
+function openCropperFromEdit() {
+    const imgEl = document.getElementById('edit-preview-img');
+    if (imgEl && imgEl.src) {
+        openCropper(imgEl.src, 'edit');
+    }
+}
+
+function openCropperFromCard(id) {
+    const item = galleryItems.find(i => i.id === id);
+    if (item) {
+        openCropper(item.pendingFileData || item.src, 'card', id);
+    }
+}
+
+// ========================================================
 // ADD PHOTO
 // ========================================================
 function openAddModal() {
     document.getElementById('add-form').reset();
+    document.getElementById('add-highlight').checked = false;
     resetAddFile();
     switchAddTab('file');
     document.getElementById('add-modal').classList.remove('hidden');
@@ -350,6 +583,7 @@ function handleAddPhoto(e) {
     const title = document.getElementById('add-title').value.trim();
     const alt = document.getElementById('add-alt').value.trim();
     const category = document.getElementById('add-category').value;
+    const highlight = document.getElementById('add-highlight').checked;
     const urlInput = document.getElementById('add-url-input').value.trim();
 
     let finalSrc = "";
@@ -372,6 +606,7 @@ function handleAddPhoto(e) {
         title: title,
         alt: alt || title,
         category: category,
+        highlight: highlight,
         dateAdded: new Date().toISOString().split('T')[0],
         pendingFileData: pendingData
     };
@@ -383,7 +618,7 @@ function handleAddPhoto(e) {
     updateStats();
     renderGallery();
     closeAddModal();
-    showToast("Photo added to gallery draft! Remember to Publish.", "success");
+    showToast("Photo added to gallery draft! Click Publish to deploy.", "success");
 }
 
 // ========================================================
@@ -398,6 +633,7 @@ function openEditModal(id) {
     document.getElementById('edit-title').value = item.title;
     document.getElementById('edit-alt').value = item.alt || '';
     document.getElementById('edit-category').value = item.category || 'Bridal Looks';
+    document.getElementById('edit-highlight').checked = item.highlight === true;
     document.getElementById('edit-preview-img').src = item.pendingFileData || item.src;
     document.getElementById('edit-current-src-text').innerText = item.src;
 
@@ -428,6 +664,7 @@ function handleSaveEdit(e) {
     item.title = document.getElementById('edit-title').value.trim();
     item.alt = document.getElementById('edit-alt').value.trim();
     item.category = document.getElementById('edit-category').value;
+    item.highlight = document.getElementById('edit-highlight').checked;
 
     if (tempEditFileData) {
         const cleanName = "gallery_" + Date.now() + "_" + sanitizeFilename(tempEditFileData.filename);
@@ -632,20 +869,19 @@ async function publishToGitHub() {
         // Step 2: Upload updated gallery.json
         status.innerText = "Updating gallery database (assets/data/gallery.json)...";
 
-        // Clean items payload (strip any client-side properties)
         const cleanItems = galleryItems.map(i => ({
             id: i.id,
             src: i.src,
             title: i.title,
             alt: i.alt || i.title,
             category: i.category || "Bridal Looks",
+            highlight: i.highlight === true,
             dateAdded: i.dateAdded || new Date().toISOString().split('T')[0]
         }));
 
         const jsonString = JSON.stringify(cleanItems, null, 2);
         const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString)));
 
-        // Get SHA of current gallery.json
         let jsonSha = null;
         try {
             const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/assets/data/gallery.json`, {
@@ -679,7 +915,6 @@ async function publishToGitHub() {
             throw new Error(`Failed to update gallery.json: ${errData.message || updateRes.statusText}`);
         }
 
-        // Success!
         originalItems = JSON.parse(JSON.stringify(cleanItems));
         galleryItems = cleanItems;
         isDirty = false;
@@ -715,6 +950,7 @@ function exportJSON() {
         title: i.title,
         alt: i.alt || i.title,
         category: i.category || "Bridal Looks",
+        highlight: i.highlight === true,
         dateAdded: i.dateAdded || new Date().toISOString().split('T')[0]
     }));
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(cleanItems, null, 2));
@@ -758,7 +994,6 @@ function processAndCompressImage(file, callback) {
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
 
-            // Export high quality WebP/JPEG (0.90)
             const compressedDataUri = canvas.toDataURL('image/jpeg', 0.90);
             callback(compressedDataUri, file.name.replace(/\.[^/.]+$/, ".jpg"));
         };

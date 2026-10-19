@@ -266,10 +266,20 @@ async function initDynamicGallery() {
     galleryData.forEach((item, index) => {
         const card = document.createElement('div');
         const delayClass = index % 3 === 1 ? 'delay-100' : (index % 3 === 2 ? 'delay-200' : '');
-        card.className = `aspect-[3/4] scroll-reveal rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[4px] sm:border-[6px] border-white bg-white ${delayClass}`;
+        const isHighlight = item.highlight === true;
+        
+        card.className = `aspect-[3/4] scroll-reveal rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[4px] sm:border-[6px] ${isHighlight ? 'border-amber-200 ring-2 ring-amber-300/60' : 'border-white'} bg-white ${delayClass}`;
         card.setAttribute('onclick', `openLightbox('${item.pendingFileData || item.src}')`);
 
+        const highlightBadge = isHighlight ? `
+            <div class="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-full text-olive-900 text-[10px] font-semibold tracking-wider uppercase shadow-md flex items-center gap-1 border border-amber-200">
+                <i class="ph-fill ph-star text-amber-500 text-xs"></i>
+                <span>Spotlight</span>
+            </div>
+        ` : '';
+
         card.innerHTML = `
+            ${highlightBadge}
             <img src="${item.pendingFileData || item.src}" alt="${escapeHtml(item.alt || item.title || 'Sudha’s Bridal Studio')}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
             <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>

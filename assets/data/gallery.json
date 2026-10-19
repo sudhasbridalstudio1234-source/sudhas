@@ -5,6 +5,7 @@
     "title": "Premium Bridal Styling",
     "alt": "Premium Bridal Styling",
     "category": "Bridal Looks",
+    "highlight": true,
     "dateAdded": "2026-10-07"
   },
   {
@@ -13,6 +14,7 @@
     "title": "Bridal Look",
     "alt": "Bridal Look",
     "category": "Bridal Looks",
+    "highlight": false,
     "dateAdded": "2026-10-07"
   },
   {
@@ -21,6 +23,7 @@
     "title": "Bridal Portrait",
     "alt": "Bridal Portrait",
     "category": "Bridal Looks",
+    "highlight": false,
     "dateAdded": "2026-10-07"
   },
   {
@@ -29,6 +32,7 @@
     "title": "Bridal Makeover Details",
     "alt": "Bridal Makeover Details",
     "category": "Bridal Looks",
+    "highlight": false,
     "dateAdded": "2026-10-07"
   },
   {
@@ -37,6 +41,7 @@
     "title": "Bridal Perfection",
     "alt": "Bridal Perfection",
     "category": "Bridal Looks",
+    "highlight": false,
     "dateAdded": "2026-10-07"
   },
   {
@@ -45,6 +50,7 @@
     "title": "Salon Excellence",
     "alt": "Salon Excellence",
     "category": "Salon Moments",
+    "highlight": false,
     "dateAdded": "2026-10-07"
   },
   {
@@ -53,6 +59,7 @@
     "title": "Traditional Wedding Couple",
     "alt": "Traditional Wedding Couple",
     "category": "Wedding Couples",
+    "highlight": false,
     "dateAdded": "2026-10-13"
   },
   {
@@ -61,6 +68,7 @@
     "title": "Contemporary Glamour Makeover",
     "alt": "Contemporary Glamour Makeover",
     "category": "Bridal Looks",
+    "highlight": false,
     "dateAdded": "2026-10-13"
   },
   {
@@ -69,6 +77,7 @@
     "title": "Traditional Kerala Wedding Couple",
     "alt": "Traditional Kerala Wedding Couple - Kasavu & Silk Saree",
     "category": "Wedding Couples",
+    "highlight": true,
     "dateAdded": "2026-10-14"
   },
   {
@@ -77,6 +86,7 @@
     "title": "Traditional Kerala Bridal Makeover",
     "alt": "Traditional Kerala Bridal Makeover - Red & Green Silk Saree",
     "category": "Bridal Looks",
+    "highlight": true,
     "dateAdded": "2026-10-16"
   }
 ]

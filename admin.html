@@ -16,6 +16,9 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 
+    <!-- Cropper.js CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -34,6 +37,7 @@
                             700: '#476247',
                             800: '#344934',
                             900: '#1e2d1e',
+                            950: '#0f170f',
                         },
                         cream: {
                             light: '#fbfcfb',
@@ -70,6 +74,14 @@
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #9fb99f;
             border-radius: 3px;
+        }
+        /* Cropper customizations */
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 4px;
+        }
+        .cropper-line, .cropper-point {
+            background-color: #6f946f;
         }
     </style>
 </head>
@@ -163,8 +175,8 @@
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
             
             <!-- Dashboard Stats & Actions -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-olive-100 shadow-soft">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Total Photos</span>
                         <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
@@ -175,7 +187,18 @@
                     <div class="text-[11px] text-olive-500 mt-1">Live in customer gallery</div>
                 </div>
 
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+                <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-soft">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs uppercase tracking-wider text-amber-700 font-medium">Spotlight</span>
+                        <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                            <i class="ph-fill ph-star text-lg"></i>
+                        </div>
+                    </div>
+                    <div id="stat-highlighted" class="font-serif text-3xl sm:text-4xl text-amber-600 font-semibold">0</div>
+                    <div class="text-[11px] text-amber-700/70 mt-1">Featured spotlight looks</div>
+                </div>
+
+                <div class="bg-white p-5 rounded-2xl border border-olive-100 shadow-soft">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Bridal Looks</span>
                         <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
@@ -186,28 +209,28 @@
                     <div class="text-[11px] text-olive-500 mt-1">Makeovers &amp; portraits</div>
                 </div>
 
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+                <div class="bg-white p-5 rounded-2xl border border-olive-100 shadow-soft">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Wedding Couples</span>
+                        <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Couples</span>
                         <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
                             <i class="ph ph-heart text-lg"></i>
                         </div>
                     </div>
                     <div id="stat-couples" class="font-serif text-3xl sm:text-4xl text-olive-900 font-semibold">0</div>
-                    <div class="text-[11px] text-olive-500 mt-1">Bride &amp; groom moments</div>
+                    <div class="text-[11px] text-olive-500 mt-1">Wedding couple moments</div>
                 </div>
 
-                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft flex flex-col justify-between">
+                <div class="col-span-2 lg:col-span-1 bg-white p-5 rounded-2xl border border-olive-100 shadow-soft flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Quick Action</span>
+                            <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Add &amp; Crop</span>
                             <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700">
                                 <i class="ph ph-plus-circle text-lg"></i>
                             </div>
                         </div>
-                        <div class="text-xs text-olive-600 font-light">Add new client makeover photo</div>
+                        <div class="text-xs text-olive-600 font-light">Upload, crop &amp; feature photo</div>
                     </div>
-                    <button onclick="openAddModal()" class="mt-4 w-full py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-soft transition-all">
+                    <button onclick="openAddModal()" class="mt-3 w-full py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-soft transition-all">
                         <i class="ph ph-plus text-base font-bold"></i> Add Photo
                     </button>
                 </div>
@@ -216,10 +239,13 @@
             <!-- Gallery Controls & Search -->
             <div class="bg-white p-4 sm:p-6 rounded-2xl border border-olive-100 shadow-soft space-y-4">
                 <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
-                    <!-- Category Tabs -->
+                    <!-- Category Tabs with Highlight Filter -->
                     <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 custom-scrollbar">
                         <button onclick="setFilter('all')" data-filter="all" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-olive-900 text-white whitespace-nowrap">
                             All Photos (<span id="count-all">0</span>)
+                        </button>
+                        <button onclick="setFilter('highlighted')" data-filter="highlighted" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-amber-800 hover:bg-amber-50 whitespace-nowrap flex items-center gap-1">
+                            <i class="ph-fill ph-star text-amber-500"></i> Spotlight (<span id="count-highlighted">0</span>)
                         </button>
                         <button onclick="setFilter('Bridal Looks')" data-filter="Bridal Looks" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap">
                             Bridal Looks (<span id="count-bridal">0</span>)
@@ -248,9 +274,12 @@
 
             <!-- Gallery Cards Grid -->
             <div>
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="font-serif text-2xl text-olive-900 font-semibold">Gallery Showcase Order</h2>
-                    <span class="text-xs text-olive-600 font-light">Use <i class="ph ph-arrow-up"></i> <i class="ph ph-arrow-down"></i> to reorder. Photos appear on the website in this exact order.</span>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div>
+                        <h2 class="font-serif text-2xl text-olive-900 font-semibold">Gallery Showcase Order</h2>
+                        <p class="text-xs text-olive-600 font-light">Click <i class="ph-fill ph-star text-amber-500"></i> to toggle Spotlight highlight. Click <i class="ph ph-crop text-olive-600"></i> to crop any photo.</p>
+                    </div>
+                    <span class="text-xs text-olive-500 font-mono">Use <i class="ph ph-arrow-up"></i> <i class="ph ph-arrow-down"></i> to reorder showcase.</span>
                 </div>
 
                 <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
@@ -296,7 +325,7 @@
             <div class="flex items-center justify-between pb-4 border-b border-olive-100 mb-6">
                 <div>
                     <h3 class="font-serif text-2xl text-olive-900 font-semibold">Add New Gallery Photo</h3>
-                    <p class="text-xs text-olive-600">Upload a client portrait or makeover photo</p>
+                    <p class="text-xs text-olive-600">Upload, crop &amp; feature a client portrait or makeover photo</p>
                 </div>
                 <button onclick="closeAddModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
                     <i class="ph ph-x text-lg"></i>
@@ -319,12 +348,17 @@
                         <div id="add-file-prompt">
                             <i class="ph ph-cloud-arrow-up text-4xl text-olive-500 mb-2 block"></i>
                             <span class="text-xs font-semibold text-olive-900 block">Click or drag &amp; drop to upload</span>
-                            <span class="text-[11px] text-olive-500 font-light block mt-1">Supports JPEG, PNG, WebP (auto-optimized for web)</span>
+                            <span class="text-[11px] text-olive-500 font-light block mt-1">Supports JPEG, PNG, WebP</span>
                         </div>
                         <div id="add-file-preview" class="hidden">
-                            <img id="add-preview-img" src="" alt="Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft mb-2">
-                            <span id="add-file-info" class="text-xs text-olive-600 block"></span>
-                            <button type="button" onclick="resetAddFile()" class="mt-2 text-xs text-rose-600 hover:underline">Choose another photo</button>
+                            <img id="add-preview-img" src="" alt="Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft mb-3">
+                            <div class="flex items-center justify-center gap-3">
+                                <button type="button" onclick="openCropperFromAdd()" class="px-3.5 py-1.5 bg-olive-900 text-white rounded-lg text-xs font-medium flex items-center gap-1.5 shadow-sm hover:bg-olive-800">
+                                    <i class="ph ph-crop"></i> Crop / Frame Photo
+                                </button>
+                                <button type="button" onclick="resetAddFile()" class="text-xs text-rose-600 hover:underline">Choose another</button>
+                            </div>
+                            <span id="add-file-info" class="text-[11px] text-olive-500 block mt-2"></span>
                         </div>
                     </div>
 
@@ -332,10 +366,30 @@
                     <div id="add-url-area" class="hidden">
                         <input type="url" id="add-url-input" oninput="handleAddUrlChange(this.value)" placeholder="https://example.com/photo.jpg"
                                class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
-                        <div id="add-url-preview-container" class="hidden mt-3">
-                            <img id="add-url-preview-img" src="" alt="URL Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft">
+                        <div id="add-url-preview-container" class="hidden mt-3 text-center">
+                            <img id="add-url-preview-img" src="" alt="URL Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft mb-2">
+                            <button type="button" onclick="openCropperFromAddUrl()" class="px-3.5 py-1.5 bg-olive-900 text-white rounded-lg text-xs font-medium inline-flex items-center gap-1.5 shadow-sm hover:bg-olive-800">
+                                <i class="ph ph-crop"></i> Crop Image
+                            </button>
                         </div>
                     </div>
+                </div>
+
+                <!-- Spotlight Highlight Checkbox -->
+                <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                            <i class="ph-fill ph-star text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-olive-900 block">Spotlight Highlight</span>
+                            <span class="text-[10px] text-olive-600 block">Highlight this photo on the public website with a luxury badge</span>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="add-highlight" class="sr-only peer">
+                        <div class="w-11 h-6 bg-olive-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-olive-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
                 </div>
 
                 <!-- Title -->
@@ -383,7 +437,7 @@
             <div class="flex items-center justify-between pb-4 border-b border-olive-100 mb-6">
                 <div>
                     <h3 class="font-serif text-2xl text-olive-900 font-semibold">Edit Gallery Photo</h3>
-                    <p class="text-xs text-olive-600">Update photo details, SEO text, or replace image</p>
+                    <p class="text-xs text-olive-600">Update photo details, crop, or toggle highlight</p>
                 </div>
                 <button onclick="closeEditModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
                     <i class="ph ph-x text-lg"></i>
@@ -393,19 +447,41 @@
             <form id="edit-form" onsubmit="handleSaveEdit(event)" class="space-y-5">
                 <input type="hidden" id="edit-id">
 
-                <!-- Current Thumbnail & Replace Option -->
+                <!-- Current Thumbnail, Crop & Replace Option -->
                 <div>
-                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-2">Photo Preview</label>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-2">Photo Preview &amp; Crop</label>
                     <div class="flex items-center gap-4 bg-cream p-3 rounded-2xl">
                         <img id="edit-preview-img" src="" alt="Thumbnail" class="w-20 h-24 object-cover rounded-xl border border-olive-200 shadow-sm">
-                        <div class="flex-1 text-xs space-y-1.5">
+                        <div class="flex-1 text-xs space-y-2">
                             <div class="font-medium text-olive-900 truncate" id="edit-current-src-text"></div>
-                            <label class="inline-flex items-center gap-1 text-[11px] font-semibold text-olive-800 bg-white px-3 py-1.5 rounded-lg border border-olive-200 cursor-pointer hover:bg-olive-50 transition-colors">
-                                <i class="ph ph-upload-simple"></i> Replace Image File
-                                <input type="file" id="edit-file-input" accept="image/*" onchange="handleEditFileSelect(this)" class="hidden">
-                            </label>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <button type="button" onclick="openCropperFromEdit()" class="px-3 py-1.5 bg-olive-900 text-white rounded-lg text-xs font-semibold flex items-center gap-1 shadow-sm hover:bg-olive-800">
+                                    <i class="ph ph-crop"></i> Crop / Reframe
+                                </button>
+                                <label class="inline-flex items-center gap-1 text-[11px] font-semibold text-olive-800 bg-white px-3 py-1.5 rounded-lg border border-olive-200 cursor-pointer hover:bg-olive-50 transition-colors">
+                                    <i class="ph ph-upload-simple"></i> Replace File
+                                    <input type="file" id="edit-file-input" accept="image/*" onchange="handleEditFileSelect(this)" class="hidden">
+                                </label>
+                            </div>
                         </div>
                     </div>
+                </div>
+
+                <!-- Spotlight Highlight Checkbox -->
+                <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+                            <i class="ph-fill ph-star text-base"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs font-semibold text-olive-900 block">Spotlight Highlight</span>
+                            <span class="text-[10px] text-olive-600 block">Feature this photo prominently with a Spotlight badge</span>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="edit-highlight" class="sr-only peer">
+                        <div class="w-11 h-6 bg-olive-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-olive-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                    </label>
                 </div>
 
                 <!-- Title -->
@@ -439,6 +515,75 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- INTERACTIVE CROP PHOTO MODAL -->
+    <!-- ======================================================== -->
+    <div id="crop-modal" class="hidden fixed inset-0 z-[70] bg-olive-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-3xl w-full p-5 sm:p-7 shadow-2xl border border-olive-100 flex flex-col max-h-[95vh]">
+            <div class="flex items-center justify-between pb-3 border-b border-olive-100 mb-4">
+                <div>
+                    <h3 class="font-serif text-2xl text-olive-900 font-semibold flex items-center gap-2">
+                        <i class="ph ph-crop text-olive-600"></i> Crop &amp; Frame Photo
+                    </h3>
+                    <p class="text-xs text-olive-600">Drag to position, pinch/scroll to zoom, or select a preset</p>
+                </div>
+                <button onclick="closeCropModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Cropper Canvas Container -->
+            <div class="flex-1 bg-stone-900 rounded-2xl overflow-hidden relative min-h-[320px] max-h-[55vh] flex items-center justify-center">
+                <img id="cropper-image" src="" alt="To Crop" class="max-w-full block">
+            </div>
+
+            <!-- Cropper Controls -->
+            <div class="pt-4 space-y-3">
+                <!-- Aspect Ratio Presets -->
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <span class="text-xs font-semibold text-olive-800 uppercase tracking-wider">Aspect Ratio:</span>
+                    <div class="flex items-center gap-1.5 flex-wrap">
+                        <button type="button" onclick="setCropRatio(0.75)" id="ratio-3-4" class="crop-ratio-btn px-3 py-1.5 text-xs font-semibold rounded-lg bg-olive-900 text-white">3:4 Portrait (Bridal)</button>
+                        <button type="button" onclick="setCropRatio(1)" id="ratio-1-1" class="crop-ratio-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-cream text-olive-800 hover:bg-cream-dark">1:1 Square</button>
+                        <button type="button" onclick="setCropRatio(1.333)" id="ratio-4-3" class="crop-ratio-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-cream text-olive-800 hover:bg-cream-dark">4:3 Landscape</button>
+                        <button type="button" onclick="setCropRatio(NaN)" id="ratio-free" class="crop-ratio-btn px-3 py-1.5 text-xs font-medium rounded-lg bg-cream text-olive-800 hover:bg-cream-dark">Free</button>
+                    </div>
+                </div>
+
+                <!-- Adjustment Tools: Rotate, Flip, Zoom, Reset -->
+                <div class="flex items-center justify-between gap-2 pt-2 border-t border-olive-100 flex-wrap">
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="rotateCrop(-90)" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Rotate Left 90°">
+                            <i class="ph ph-arrow-counter-clockwise text-base"></i>
+                        </button>
+                        <button type="button" onclick="rotateCrop(90)" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Rotate Right 90°">
+                            <i class="ph ph-arrow-clockwise text-base"></i>
+                        </button>
+                        <button type="button" onclick="flipCropX()" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Flip Horizontal">
+                            <i class="ph ph-arrows-left-right text-base"></i>
+                        </button>
+                        <button type="button" onclick="zoomCrop(0.1)" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Zoom In">
+                            <i class="ph ph-magnifying-glass-plus text-base"></i>
+                        </button>
+                        <button type="button" onclick="zoomCrop(-0.1)" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Zoom Out">
+                            <i class="ph ph-magnifying-glass-minus text-base"></i>
+                        </button>
+                        <button type="button" onclick="resetCrop()" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Reset Crop">
+                            Reset
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeCropModal()" class="px-4 py-2 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium">Cancel</button>
+                        <button type="button" onclick="applyCrop()" class="px-5 py-2 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft flex items-center gap-1.5">
+                            <i class="ph ph-check font-bold"></i> Apply Crop
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -537,10 +682,13 @@
     </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm bg-olive-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-olive-700 transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-3 text-xs">
+    <div id="toast" class="fixed bottom-6 right-6 z-[80] max-w-sm bg-olive-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-olive-700 transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-3 text-xs">
         <i id="toast-icon" class="ph ph-check-circle text-xl text-emerald-400"></i>
         <span id="toast-msg">Action completed</span>
     </div>
+
+    <!-- Cropper.js JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
 
     <!-- Admin Logic Script -->
     <script src="assets/js/admin.js"></script>
