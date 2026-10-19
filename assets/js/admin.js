@@ -782,7 +782,7 @@ function revertDraft() {
 // ========================================================
 function previewDraft() {
     localStorage.setItem('sudha_gallery_draft', JSON.stringify(galleryItems));
-    window.open('index.html?preview=true#gallery', '_blank');
+    window.open('./?preview=true#gallery', '_blank');
 }
 
 // ========================================================

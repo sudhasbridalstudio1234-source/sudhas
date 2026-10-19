@@ -12,6 +12,16 @@
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <link rel="canonical" href="https://sudhasbridalstudio1234-source.github.io/sudhas/">
 
+    <!-- Clean URL Script: Prevent index.html from showing in domain/address bar -->
+    <script>
+        (function() {
+            if (window.location.pathname.endsWith('/index.html') || window.location.pathname === '/index.html') {
+                var cleanPath = window.location.pathname.replace(/\/index\.html$/, '/') + window.location.search + window.location.hash;
+                window.history.replaceState(null, document.title, cleanPath);
+            }
+        })();
+    </script>
+
     <!-- Favicon & Touch Icons -->
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/jpeg" href="assets/images/logo.jpg">
@@ -873,16 +883,13 @@
                 </div>
             </div>
             
-            <div class="border-t border-olive-200 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-center text-xs font-light text-olive-500 tracking-wider">
+            <div class="border-t border-olive-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center text-xs font-light text-olive-500 tracking-wider">
                 <p class="uppercase">&copy; 2026 Sudha’s Beauty Care &amp; Spa. All Rights Reserved.</p>
                 <p class="normal-case tracking-normal">
                     <a href="https://technexttechnologies.in/" target="_blank" rel="noopener noreferrer" class="text-olive-600 hover:text-olive-900 transition-colors font-medium">
                         Conceptualised by Technext
                     </a>
                 </p>
-                <a href="admin.html" class="inline-flex items-center gap-1.5 text-olive-400 hover:text-olive-700 transition-colors lowercase tracking-normal text-[11px]" title="Staff &amp; Owner Gallery Management Portal">
-                    <i class="ph ph-lock-key"></i> admin portal
-                </a>
             </div>
         </div>
     </footer>
