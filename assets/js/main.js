@@ -287,7 +287,7 @@ async function initDynamicGallery() {
         const highlightBadge = isHighlight ? `
             <div class="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 bg-white/95 backdrop-blur-md rounded-full text-olive-900 text-[10px] font-semibold tracking-wider uppercase shadow-md flex items-center gap-1 border border-amber-200">
                 <i class="ph-fill ph-star text-amber-500 text-xs"></i>
-                <span>Spotlight</span>
+                <span>Featured</span>
             </div>
         ` : '';
 

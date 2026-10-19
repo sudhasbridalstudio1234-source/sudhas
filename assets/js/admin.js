@@ -197,24 +197,24 @@ function renderGallery() {
                     #${actualIndex + 1}
                 </div>
 
-                <!-- Spotlight Highlight Badge -->
+                <!-- Featured Badge -->
                 ${isHighlight ? `
-                    <div class="absolute top-2.5 left-11 px-2 py-0.5 bg-amber-500/90 backdrop-blur-sm rounded-lg text-white text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 shadow-sm">
-                        <i class="ph-fill ph-star text-xs"></i> Spotlight
+                    <div class="absolute top-2.5 left-11 px-2.5 py-0.5 bg-amber-500/95 backdrop-blur-sm rounded-lg text-white text-[10px] font-semibold tracking-wider uppercase flex items-center gap-1 shadow-sm">
+                        <i class="ph-fill ph-star text-xs"></i> Featured
                     </div>
                 ` : ''}
 
                 <!-- Category Badge -->
-                <div class="absolute top-2.5 right-2.5 px-2 py-0.5 bg-white/90 backdrop-blur-sm rounded-lg text-olive-800 text-[10px] font-medium shadow-xs">
+                <div class="absolute top-2.5 right-2.5 px-2 py-0.5 bg-white/95 backdrop-blur-sm rounded-lg text-olive-800 text-[10px] font-medium shadow-xs">
                     ${escapeHtml(item.category || 'Bridal Looks')}
                 </div>
 
                 <!-- Quick Crop Overlay Button -->
-                <button onclick="openCropperFromCard('${item.id}')" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 bg-olive-900/85 hover:bg-olive-900 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm backdrop-blur-sm" title="Crop &amp; Frame this photo">
+                <button onclick="openCropperFromCard('${item.id}')" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 bg-olive-900/90 hover:bg-olive-900 text-white rounded-lg text-[10px] font-semibold uppercase tracking-wider flex items-center gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-sm backdrop-blur-sm" title="Crop &amp; frame photo">
                     <i class="ph ph-crop text-xs"></i> Crop
                 </button>
 
-                ${item.pendingFileData ? '<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded uppercase tracking-wider shadow-sm">Pending Upload</div>' : ''}
+                ${item.pendingFileData ? '<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded uppercase tracking-wider shadow-sm">Unsaved Edit</div>' : ''}
             </div>
 
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
@@ -224,7 +224,7 @@ function renderGallery() {
                             ${escapeHtml(item.title)}
                         </h3>
                         <!-- Star Toggle Button -->
-                        <button onclick="toggleHighlight('${item.id}')" class="p-1 rounded-md transition-colors ${isHighlight ? 'text-amber-500 hover:text-amber-600' : 'text-olive-300 hover:text-amber-500'}" title="${isHighlight ? 'Remove Spotlight highlight' : 'Highlight in Spotlight'}">
+                        <button onclick="toggleHighlight('${item.id}')" class="p-1 rounded-md transition-colors ${isHighlight ? 'text-amber-500 hover:text-amber-600' : 'text-olive-300 hover:text-amber-500'}" title="${isHighlight ? 'Remove from Featured' : 'Mark as Featured'}">
                             <i class="${isHighlight ? 'ph-fill ph-star' : 'ph ph-star'} text-lg"></i>
                         </button>
                     </div>
@@ -233,7 +233,7 @@ function renderGallery() {
                     </p>
                 </div>
 
-                <div class="pt-3 border-t border-olive-100 flex items-center justify-between">
+                <div class="pt-3 border-t border-olive-100 flex items-center justify-between gap-2">
                     <!-- Move Up / Down Reordering -->
                     <div class="flex items-center gap-1">
                         <button onclick="moveItem(${actualIndex}, -1)" ${actualIndex === 0 ? 'disabled class="opacity-30 cursor-not-allowed"' : 'class="hover:bg-olive-50 text-olive-700"'} class="w-7 h-7 rounded-lg border border-olive-200 flex items-center justify-center transition-colors" title="Move Up">
@@ -244,9 +244,12 @@ function renderGallery() {
                         </button>
                     </div>
 
-                    <!-- Edit / Crop / Delete -->
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="openEditModal('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs font-medium flex items-center gap-1 transition-colors" title="Edit photo">
+                    <!-- Crop / Edit / Delete Actions -->
+                    <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                        <button onclick="openCropperFromCard('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-olive-300 bg-olive-50/70 hover:bg-olive-100 text-olive-900 text-xs font-semibold flex items-center gap-1 transition-colors" title="Crop &amp; frame this photo">
+                            <i class="ph ph-crop text-sm text-olive-700"></i> Crop
+                        </button>
+                        <button onclick="openEditModal('${item.id}')" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs font-medium flex items-center gap-1 transition-colors" title="Edit photo details">
                             <i class="ph ph-pencil-simple text-sm"></i> Edit
                         </button>
                         <button onclick="openDeleteModal('${item.id}')" class="w-7 h-7 rounded-lg border border-rose-200 text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors" title="Delete photo">
@@ -316,7 +319,7 @@ function handleSearch(term) {
 }
 
 // ========================================================
-// HIGHLIGHT / SPOTLIGHT TOGGLE
+// FEATURED HIGHLIGHT TOGGLE
 // ========================================================
 function toggleHighlight(id) {
     const item = galleryItems.find(i => i.id === id);
@@ -327,7 +330,7 @@ function toggleHighlight(id) {
     updateSyncStatus();
     updateStats();
     renderGallery();
-    showToast(item.highlight ? "Photo added to Spotlight!" : "Spotlight removed", item.highlight ? "success" : "info");
+    showToast(item.highlight ? "Photo marked as Featured!" : "Photo removed from Featured", item.highlight ? "success" : "info");
 }
 
 // ========================================================
@@ -357,33 +360,61 @@ function openCropper(imageSrc, context, targetId = null) {
     cropScaleX = 1;
 
     const modal = document.getElementById('crop-modal');
-    const imgEl = document.getElementById('cropper-image');
+    modal.classList.remove('hidden');
 
-    // Destroy existing instance if any
+    // Clean up existing instance safely
     if (cropperInstance) {
-        cropperInstance.destroy();
+        try {
+            cropperInstance.destroy();
+        } catch (e) {}
         cropperInstance = null;
     }
 
-    imgEl.src = imageSrc;
-    modal.classList.remove('hidden');
-
-    // Initialize Cropper when image loads
-    imgEl.onload = () => {
-        cropperInstance = new Cropper(imgEl, {
-            aspectRatio: currentCropRatio,
-            viewMode: 1,
-            autoCropArea: 0.95,
-            responsive: true,
-            movable: true,
-            rotatable: true,
-            scalable: true,
-            zoomable: true
-        });
-    };
-    if (imgEl.complete && imgEl.naturalWidth > 0) {
-        imgEl.onload();
+    // Recreate clean img element inside container wrapper
+    const container = document.getElementById('cropper-container-wrapper');
+    if (container) {
+        container.innerHTML = `<img id="cropper-image" alt="To Crop" style="max-width: 100%; max-height: 100%; display: block; margin: auto;">`;
     }
+
+    const imgEl = document.getElementById('cropper-image');
+    if (!imgEl) return;
+
+    let isInitialized = false;
+    const setupCropper = () => {
+        if (isInitialized) return;
+        isInitialized = true;
+
+        try {
+            if (cropperInstance) {
+                try { cropperInstance.destroy(); } catch (e) {}
+            }
+            cropperInstance = new Cropper(imgEl, {
+                aspectRatio: currentCropRatio,
+                viewMode: 1,
+                autoCropArea: 0.95,
+                responsive: true,
+                restore: false,
+                checkCrossOrigin: false,
+                movable: true,
+                rotatable: true,
+                scalable: true,
+                zoomable: true,
+                ready() {
+                    updateCropRatioButtons();
+                }
+            });
+        } catch (err) {
+            console.error("Cropper setup error:", err);
+        }
+    };
+
+    setTimeout(() => {
+        imgEl.onload = setupCropper;
+        imgEl.src = imageSrc;
+        if (imgEl.complete && imgEl.naturalWidth > 0) {
+            setupCropper();
+        }
+    }, 60);
 
     updateCropRatioButtons();
 }
@@ -444,32 +475,52 @@ function resetCrop() {
 
 function closeCropModal() {
     if (cropperInstance) {
-        cropperInstance.destroy();
+        try {
+            cropperInstance.destroy();
+        } catch (e) {}
         cropperInstance = null;
     }
     document.getElementById('crop-modal').classList.add('hidden');
 }
 
 function applyCrop() {
-    if (!cropperInstance) return;
-
-    const canvas = cropperInstance.getCroppedCanvas({
-        maxWidth: 1600,
-        maxHeight: 2000,
-        imageSmoothingEnabled: true,
-        imageSmoothingQuality: 'high'
-    });
-
-    if (!canvas) {
-        alert("Failed to crop image.");
+    if (!cropperInstance) {
+        alert("The image is still loading. Please wait a moment.");
         return;
     }
 
-    const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    let canvas = null;
+    try {
+        canvas = cropperInstance.getCroppedCanvas({
+            maxWidth: 1600,
+            maxHeight: 2000,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high'
+        });
+    } catch (err) {
+        console.error("Cropper canvas error:", err);
+    }
+
+    if (!canvas) {
+        alert("Failed to process cropped photo. Please adjust the crop frame slightly and try again.");
+        return;
+    }
+
+    let croppedDataUrl = "";
+    try {
+        croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+    } catch (err) {
+        console.error("Canvas toDataURL error:", err);
+        alert("Could not extract image data.");
+        return;
+    }
 
     if (cropContext === 'add') {
         tempAddFileData = croppedDataUrl;
         document.getElementById('add-preview-img').src = croppedDataUrl;
+        document.getElementById('add-file-prompt').classList.add('hidden');
+        document.getElementById('add-file-preview').classList.remove('hidden');
+        document.getElementById('add-file-info').innerText = 'Cropped photo ready to add';
     } else if (cropContext === 'add-url') {
         tempAddFileData = croppedDataUrl;
         document.getElementById('add-url-preview-img').src = croppedDataUrl;
@@ -492,7 +543,7 @@ function applyCrop() {
     }
 
     closeCropModal();
-    showToast("Photo cropped successfully!", "success");
+    showToast("Photo cropped! Remember to click 'Save Changes' to update website.", "success");
 }
 
 function openCropperFromAdd() {

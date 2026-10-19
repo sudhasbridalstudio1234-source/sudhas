@@ -76,12 +76,20 @@
             border-radius: 3px;
         }
         /* Cropper customizations */
+        .cropper-container {
+            width: 100% !important;
+            height: 100% !important;
+        }
         .cropper-view-box,
         .cropper-face {
             border-radius: 4px;
         }
         .cropper-line, .cropper-point {
             background-color: #6f946f;
+        }
+        .cropper-point {
+            width: 8px !important;
+            height: 8px !important;
         }
     </style>
 </head>
@@ -95,23 +103,23 @@
             <div class="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-soft border-2 border-olive-200">
                 <img src="assets/images/logo.jpg" alt="Logo" class="w-full h-full object-cover">
             </div>
-            <span class="text-xs uppercase tracking-[0.25em] text-olive-600 font-semibold block mb-2">Admin Portal</span>
-            <h2 class="font-serif text-3xl text-olive-900 mb-2">Sudha's Bridal Studio</h2>
-            <p class="text-sm text-olive-700 font-light mb-8">Enter your secure passcode to manage gallery photos.</p>
+            <span class="text-[11px] uppercase tracking-[0.25em] text-olive-600 font-semibold block mb-1.5">Studio Management Portal</span>
+            <h2 class="font-serif text-3xl text-olive-900 mb-2 font-semibold">Sudha's Bridal Studio</h2>
+            <p class="text-xs text-olive-600 font-light mb-7">Enter your passcode to manage website photos and bridal showcase.</p>
 
             <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
                 <div class="relative">
-                    <input type="password" id="login-pin" maxlength="16" placeholder="Enter Admin Passcode" required autocomplete="current-password"
-                           class="w-full px-5 py-4 text-center tracking-widest text-lg font-mono rounded-2xl border border-olive-200 focus:outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-500/20 bg-cream-light">
+                    <input type="password" id="login-pin" maxlength="16" placeholder="Enter Studio Passcode" required autocomplete="current-password"
+                           class="w-full px-5 py-3.5 text-center tracking-widest text-base font-mono rounded-xl border border-olive-200 focus:outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-500/20 bg-cream-light">
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-600 font-medium">Incorrect passcode. Default passcode is 2006.</div>
-                <button type="submit" class="w-full py-4 bg-olive-900 hover:bg-olive-800 text-white rounded-2xl text-xs uppercase tracking-widest font-semibold transition-all shadow-soft hover:shadow-soft-hover">
-                    Unlock Gallery Admin
+                <button type="submit" class="w-full py-3.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-widest font-semibold transition-all shadow-soft flex items-center justify-center gap-2">
+                    <i class="ph ph-lock-key-open text-base"></i> Sign In to Portal
                 </button>
             </form>
             <div class="mt-6 text-xs text-olive-600 font-light">
-                <a href="./" class="hover:underline flex items-center justify-center gap-1">
-                    <i class="ph ph-arrow-left"></i> Return to Public Website
+                <a href="./" class="hover:underline flex items-center justify-center gap-1.5">
+                    <i class="ph ph-arrow-left"></i> Return to Website
                 </a>
             </div>
         </div>
@@ -129,34 +137,26 @@
                     <img src="assets/images/logo.jpg" alt="Logo" class="w-12 h-12 rounded-full shadow-sm border border-olive-100">
                     <div>
                         <div class="flex items-center gap-2">
-                            <h1 class="font-serif text-xl sm:text-2xl text-olive-900 font-semibold leading-tight">Gallery Manager</h1>
+                            <h1 class="font-serif text-xl sm:text-2xl text-olive-900 font-semibold leading-tight">Sudha's Bridal Studio</h1>
                             <span id="sync-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Synced</span>
                         </div>
-                        <p class="text-xs text-olive-600 hidden sm:block">Sudha's Beauty Care &amp; Bridal Studio Mananthavady</p>
+                        <p class="text-xs text-olive-600 hidden sm:block">Gallery &amp; Showcase Content Management</p>
                     </div>
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="saveChangesWithoutToken()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-soft transition-all" title="Save changes directly to website (No GitHub token needed)">
+                    <button onclick="saveChangesWithoutToken()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-soft transition-all" title="Save changes directly to live website">
                         <i class="ph ph-floppy-disk text-base font-bold"></i>
                         <span>Save Changes</span>
                     </button>
                     <a href="./" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium flex items-center gap-1.5 transition-colors" title="View live website">
                         <i class="ph ph-arrow-square-out text-base"></i>
-                        <span class="hidden md:inline">View Site</span>
+                        <span class="hidden md:inline">View Website</span>
                     </a>
-                    <button onclick="previewDraft()" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-olive-200 bg-cream text-olive-900 hover:bg-cream-dark text-xs uppercase tracking-wider font-medium flex items-center gap-1.5 transition-colors" title="Preview draft in live page">
-                        <i class="ph ph-eye text-base"></i>
-                        <span class="hidden md:inline">Preview</span>
-                    </button>
-                    <button onclick="publishToGitHub()" class="px-3 py-2 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium hidden lg:flex items-center gap-1.5 transition-colors" title="Optional Cloud Deploy (GitHub)">
-                        <i class="ph ph-cloud-arrow-up text-base"></i>
-                        <span>Cloud Sync</span>
-                    </button>
                     <button onclick="openSettingsModal()" class="p-2 sm:p-2.5 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 transition-colors" title="Settings">
                         <i class="ph ph-gear text-lg"></i>
                     </button>
-                    <button onclick="handleLogout()" class="p-2 sm:p-2.5 rounded-xl border border-olive-200 text-rose-600 hover:bg-rose-50 transition-colors" title="Logout">
+                    <button onclick="handleLogout()" class="p-2 sm:p-2.5 rounded-xl border border-olive-200 text-rose-600 hover:bg-rose-50 transition-colors" title="Sign Out">
                         <i class="ph ph-sign-out text-lg"></i>
                     </button>
                 </div>
@@ -168,15 +168,12 @@
             <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-amber-900">
                 <div class="flex items-center gap-2">
                     <i class="ph ph-warning-circle text-lg text-amber-600"></i>
-                    <span><strong>Unsaved Changes:</strong> You have modified gallery photos. Click <strong>Save Changes</strong> to apply directly to website.</span>
+                    <span><strong>Unsaved Changes:</strong> You have modified gallery photos. Click <strong>Save Changes</strong> to update the live website.</span>
                 </div>
                 <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <button onclick="revertDraft()" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs uppercase tracking-wider">Discard</button>
                     <button onclick="saveChangesWithoutToken()" class="px-5 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs uppercase tracking-wider font-semibold shadow-sm flex items-center gap-1.5">
                         <i class="ph ph-floppy-disk text-base"></i> Save Changes
-                    </button>
-                    <button onclick="publishToGitHub()" class="px-3.5 py-1.5 rounded-lg border border-olive-300 text-olive-800 hover:bg-olive-100 text-xs uppercase tracking-wider font-medium hidden sm:flex items-center gap-1" title="Optional GitHub Cloud Publish">
-                        <i class="ph ph-cloud-arrow-up text-base"></i> Cloud Sync
                     </button>
                 </div>
             </div>
@@ -200,20 +197,20 @@
 
                 <div class="bg-white p-5 rounded-2xl border border-amber-100 shadow-soft">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="text-xs uppercase tracking-wider text-amber-700 font-medium">Spotlight</span>
+                        <span class="text-xs uppercase tracking-wider text-amber-700 font-medium">Featured</span>
                         <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
                             <i class="ph-fill ph-star text-lg"></i>
                         </div>
                     </div>
                     <div id="stat-highlighted" class="font-serif text-3xl sm:text-4xl text-amber-600 font-semibold">0</div>
-                    <div class="text-[11px] text-amber-700/70 mt-1">Featured spotlight looks</div>
+                    <div class="text-[11px] text-amber-700/70 mt-1">Featured showcase photos</div>
                 </div>
 
                 <div class="bg-white p-5 rounded-2xl border border-olive-100 shadow-soft">
                     <div class="flex items-center justify-between mb-2">
                         <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Bridal Looks</span>
                         <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
-                            <i class="ph ph-sparkle text-lg"></i>
+                            <i class="ph ph-paint-brush-broad text-lg"></i>
                         </div>
                     </div>
                     <div id="stat-bridal" class="font-serif text-3xl sm:text-4xl text-olive-900 font-semibold">0</div>
@@ -234,12 +231,12 @@
                 <div class="col-span-2 lg:col-span-1 bg-white p-5 rounded-2xl border border-olive-100 shadow-soft flex flex-col justify-between">
                     <div>
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Add &amp; Crop</span>
+                            <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Quick Upload</span>
                             <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700">
                                 <i class="ph ph-plus-circle text-lg"></i>
                             </div>
                         </div>
-                        <div class="text-xs text-olive-600 font-light">Upload, crop &amp; feature photo</div>
+                        <div class="text-xs text-olive-600 font-light">Add &amp; crop new client photo</div>
                     </div>
                     <button onclick="openAddModal()" class="mt-3 w-full py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-soft transition-all">
                         <i class="ph ph-plus text-base font-bold"></i> Add Photo
@@ -256,7 +253,7 @@
                             All Photos (<span id="count-all">0</span>)
                         </button>
                         <button onclick="setFilter('highlighted')" data-filter="highlighted" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-amber-800 hover:bg-amber-50 whitespace-nowrap flex items-center gap-1">
-                            <i class="ph-fill ph-star text-amber-500"></i> Spotlight (<span id="count-highlighted">0</span>)
+                            <i class="ph-fill ph-star text-amber-500"></i> Featured (<span id="count-highlighted">0</span>)
                         </button>
                         <button onclick="setFilter('Bridal Looks')" data-filter="Bridal Looks" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap">
                             Bridal Looks (<span id="count-bridal">0</span>)
@@ -395,8 +392,8 @@
                             <i class="ph-fill ph-star text-base"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-olive-900 block">Spotlight Highlight</span>
-                            <span class="text-[10px] text-olive-600 block">Highlight this photo on the public website with a luxury badge</span>
+                            <span class="text-xs font-semibold text-olive-900 block">Featured Photo</span>
+                            <span class="text-[10px] text-olive-600 block">Feature this photo prominently on the website with a star badge</span>
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -487,8 +484,8 @@
                             <i class="ph-fill ph-star text-base"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-olive-900 block">Spotlight Highlight</span>
-                            <span class="text-[10px] text-olive-600 block">Feature this photo prominently with a Spotlight badge</span>
+                            <span class="text-xs font-semibold text-olive-900 block">Featured Photo</span>
+                            <span class="text-[10px] text-olive-600 block">Feature this photo prominently on the website with a star badge</span>
                         </div>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
@@ -549,8 +546,8 @@
             </div>
 
             <!-- Cropper Canvas Container -->
-            <div class="flex-1 bg-stone-900 rounded-2xl overflow-hidden relative min-h-[320px] max-h-[55vh] flex items-center justify-center">
-                <img id="cropper-image" src="" alt="To Crop" class="max-w-full block">
+            <div id="cropper-container-wrapper" class="w-full h-[360px] sm:h-[460px] bg-stone-900 rounded-2xl overflow-hidden relative flex items-center justify-center">
+                <img id="cropper-image" src="" alt="To Crop" style="max-width: 100%; max-height: 100%; display: block; margin: auto;">
             </div>
 
             <!-- Cropper Controls -->
@@ -584,7 +581,7 @@
                         <button type="button" onclick="zoomCrop(-0.1)" class="p-2 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Zoom Out">
                             <i class="ph ph-magnifying-glass-minus text-base"></i>
                         </button>
-                        <button type="button" onclick="resetCrop()" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs" title="Reset Crop">
+                        <button type="button" onclick="resetCrop()" class="px-2.5 py-1.5 rounded-lg border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs font-medium" title="Reset Crop">
                             Reset
                         </button>
                     </div>
@@ -592,7 +589,7 @@
                     <div class="flex items-center gap-2">
                         <button type="button" onclick="closeCropModal()" class="px-4 py-2 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium">Cancel</button>
                         <button type="button" onclick="applyCrop()" class="px-5 py-2 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft flex items-center gap-1.5">
-                            <i class="ph ph-check font-bold"></i> Apply Crop
+                            <i class="ph ph-check font-bold"></i> Save Crop
                         </button>
                     </div>
                 </div>
