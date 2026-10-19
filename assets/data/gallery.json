@@ -1,0 +1,82 @@
+[
+  {
+    "id": "gallery-1",
+    "src": "assets/images/gallery_new_1.jpg",
+    "title": "Premium Bridal Styling",
+    "alt": "Premium Bridal Styling",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-2",
+    "src": "assets/images/gallery_new_2.jpg",
+    "title": "Bridal Look",
+    "alt": "Bridal Look",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-3",
+    "src": "assets/images/gallery_new_3.jpg",
+    "title": "Bridal Portrait",
+    "alt": "Bridal Portrait",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-4",
+    "src": "assets/images/gallery_new_4.jpg",
+    "title": "Bridal Makeover Details",
+    "alt": "Bridal Makeover Details",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-5",
+    "src": "assets/images/gallery_new_5.jpg",
+    "title": "Bridal Perfection",
+    "alt": "Bridal Perfection",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-6",
+    "src": "assets/images/photo3.jpg",
+    "title": "Salon Excellence",
+    "alt": "Salon Excellence",
+    "category": "Salon Moments",
+    "dateAdded": "2026-10-07"
+  },
+  {
+    "id": "gallery-7",
+    "src": "assets/images/gallery_new_6.jpg",
+    "title": "Traditional Wedding Couple",
+    "alt": "Traditional Wedding Couple",
+    "category": "Wedding Couples",
+    "dateAdded": "2026-10-13"
+  },
+  {
+    "id": "gallery-8",
+    "src": "assets/images/gallery_new_7.jpg",
+    "title": "Contemporary Glamour Makeover",
+    "alt": "Contemporary Glamour Makeover",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-13"
+  },
+  {
+    "id": "gallery-9",
+    "src": "assets/images/gallery_new_8.jpg",
+    "title": "Traditional Kerala Wedding Couple",
+    "alt": "Traditional Kerala Wedding Couple - Kasavu & Silk Saree",
+    "category": "Wedding Couples",
+    "dateAdded": "2026-10-14"
+  },
+  {
+    "id": "gallery-10",
+    "src": "assets/images/gallery_new_9.jpg",
+    "title": "Traditional Kerala Bridal Makeover",
+    "alt": "Traditional Kerala Bridal Makeover - Red & Green Silk Saree",
+    "category": "Bridal Looks",
+    "dateAdded": "2026-10-16"
+  }
+]

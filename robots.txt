@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
+Disallow: /admin/
 
 # Sitemap
 Sitemap: https://sudhasbridalstudio1234-source.github.io/sudhas/sitemap.xml

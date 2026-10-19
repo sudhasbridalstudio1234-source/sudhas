@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Admin Panel | Sudha's Beauty Care &amp; Bridal Studio</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="favicon.jpg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Allura&display=swap" rel="stylesheet">
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        olive: {
+                            50: '#f6f9f6',
+                            100: '#edf2ed',
+                            200: '#dce5dc',
+                            300: '#c2d2c2',
+                            400: '#9fb99f',
+                            500: '#6f946f',
+                            600: '#5c7f5c',
+                            700: '#476247',
+                            800: '#344934',
+                            900: '#1e2d1e',
+                        },
+                        cream: {
+                            light: '#fbfcfb',
+                            DEFAULT: '#f3f6f3',
+                            dark: '#e5ebe5',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Cormorant Garamond"', 'serif'],
+                        sans: ['Montserrat', 'sans-serif'],
+                        script: ['Allura', 'cursive'],
+                    },
+                    boxShadow: {
+                        'soft': '0 10px 40px -10px rgba(30, 45, 30, 0.08)',
+                        'soft-hover': '0 20px 50px -10px rgba(30, 45, 30, 0.16)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f6f9f6;
+            color: #1e2d1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #edf2ed;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #9fb99f;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-cream-light antialiased">
+
+    <!-- ======================================================== -->
+    <!-- PIN LOGIN OVERLAY -->
+    <!-- ======================================================== -->
+    <div id="login-modal" class="fixed inset-0 z-50 bg-olive-900/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 sm:p-10 max-w-md w-full shadow-2xl border border-olive-100 text-center relative overflow-hidden animate-fade-in">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden shadow-soft border-2 border-olive-200">
+                <img src="assets/images/logo.jpg" alt="Logo" class="w-full h-full object-cover">
+            </div>
+            <span class="text-xs uppercase tracking-[0.25em] text-olive-600 font-semibold block mb-2">Admin Portal</span>
+            <h2 class="font-serif text-3xl text-olive-900 mb-2">Sudha's Bridal Studio</h2>
+            <p class="text-sm text-olive-700 font-light mb-8">Enter your secure passcode to manage gallery photos.</p>
+
+            <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                <div class="relative">
+                    <input type="password" id="login-pin" maxlength="16" placeholder="Enter Admin Passcode" required autocomplete="current-password"
+                           class="w-full px-5 py-4 text-center tracking-widest text-lg font-mono rounded-2xl border border-olive-200 focus:outline-none focus:border-olive-500 focus:ring-2 focus:ring-olive-500/20 bg-cream-light">
+                </div>
+                <div id="login-error" class="hidden text-xs text-rose-600 font-medium">Incorrect passcode. Default passcode is 2006.</div>
+                <button type="submit" class="w-full py-4 bg-olive-900 hover:bg-olive-800 text-white rounded-2xl text-xs uppercase tracking-widest font-semibold transition-all shadow-soft hover:shadow-soft-hover">
+                    Unlock Gallery Admin
+                </button>
+            </form>
+            <div class="mt-6 text-xs text-olive-600 font-light">
+                <a href="index.html" class="hover:underline flex items-center justify-center gap-1">
+                    <i class="ph ph-arrow-left"></i> Return to Public Website
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- MAIN ADMIN INTERFACE -->
+    <!-- ======================================================== -->
+    <div id="admin-app" class="hidden flex-1 flex flex-col">
+        
+        <!-- Header -->
+        <header class="bg-white border-b border-olive-100 sticky top-0 z-30 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <img src="assets/images/logo.jpg" alt="Logo" class="w-12 h-12 rounded-full shadow-sm border border-olive-100">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-serif text-xl sm:text-2xl text-olive-900 font-semibold leading-tight">Gallery Manager</h1>
+                            <span id="sync-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Synced</span>
+                        </div>
+                        <p class="text-xs text-olive-600 hidden sm:block">Sudha's Beauty Care &amp; Bridal Studio Mananthavady</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="index.html" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium flex items-center gap-1.5 transition-colors" title="View live website">
+                        <i class="ph ph-arrow-square-out text-base"></i>
+                        <span class="hidden md:inline">View Site</span>
+                    </a>
+                    <button onclick="previewDraft()" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-olive-200 bg-cream text-olive-900 hover:bg-cream-dark text-xs uppercase tracking-wider font-medium flex items-center gap-1.5 transition-colors" title="Preview draft in live page">
+                        <i class="ph ph-eye text-base"></i>
+                        <span class="hidden md:inline">Preview Draft</span>
+                    </button>
+                    <button onclick="openSettingsModal()" class="p-2 sm:p-2.5 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 transition-colors" title="Settings &amp; GitHub Token">
+                        <i class="ph ph-gear text-lg"></i>
+                    </button>
+                    <button onclick="handleLogout()" class="p-2 sm:p-2.5 rounded-xl border border-olive-200 text-rose-600 hover:bg-rose-50 transition-colors" title="Logout">
+                        <i class="ph ph-sign-out text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Unsaved Changes Alert Banner -->
+        <div id="unsaved-banner" class="hidden bg-amber-50 border-b border-amber-200 py-3 px-4">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-amber-900">
+                <div class="flex items-center gap-2">
+                    <i class="ph ph-warning-circle text-lg text-amber-600"></i>
+                    <span><strong>Unpublished Changes:</strong> You have modified gallery photos. Click <strong>Publish to Website</strong> to deploy to GitHub Pages.</span>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button onclick="revertDraft()" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs uppercase tracking-wider">Discard</button>
+                    <button onclick="publishToGitHub()" class="px-4 py-1.5 rounded-lg bg-olive-900 text-white hover:bg-olive-800 text-xs uppercase tracking-wider font-semibold shadow-sm flex items-center gap-1">
+                        <i class="ph ph-cloud-arrow-up text-base"></i> Publish to Website
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            
+            <!-- Dashboard Stats & Actions -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Total Photos</span>
+                        <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
+                            <i class="ph ph-images text-lg"></i>
+                        </div>
+                    </div>
+                    <div id="stat-total" class="font-serif text-3xl sm:text-4xl text-olive-900 font-semibold">0</div>
+                    <div class="text-[11px] text-olive-500 mt-1">Live in customer gallery</div>
+                </div>
+
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Bridal Looks</span>
+                        <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
+                            <i class="ph ph-sparkle text-lg"></i>
+                        </div>
+                    </div>
+                    <div id="stat-bridal" class="font-serif text-3xl sm:text-4xl text-olive-900 font-semibold">0</div>
+                    <div class="text-[11px] text-olive-500 mt-1">Makeovers &amp; portraits</div>
+                </div>
+
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Wedding Couples</span>
+                        <div class="w-8 h-8 rounded-full bg-olive-50 flex items-center justify-center text-olive-700">
+                            <i class="ph ph-heart text-lg"></i>
+                        </div>
+                    </div>
+                    <div id="stat-couples" class="font-serif text-3xl sm:text-4xl text-olive-900 font-semibold">0</div>
+                    <div class="text-[11px] text-olive-500 mt-1">Bride &amp; groom moments</div>
+                </div>
+
+                <div class="bg-white p-5 sm:p-6 rounded-2xl border border-olive-100 shadow-soft flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs uppercase tracking-wider text-olive-600 font-medium">Quick Action</span>
+                            <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700">
+                                <i class="ph ph-plus-circle text-lg"></i>
+                            </div>
+                        </div>
+                        <div class="text-xs text-olive-600 font-light">Add new client makeover photo</div>
+                    </div>
+                    <button onclick="openAddModal()" class="mt-4 w-full py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 shadow-soft transition-all">
+                        <i class="ph ph-plus text-base font-bold"></i> Add Photo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Gallery Controls & Search -->
+            <div class="bg-white p-4 sm:p-6 rounded-2xl border border-olive-100 shadow-soft space-y-4">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <!-- Category Tabs -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto pb-2 md:pb-0 custom-scrollbar">
+                        <button onclick="setFilter('all')" data-filter="all" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-olive-900 text-white whitespace-nowrap">
+                            All Photos (<span id="count-all">0</span>)
+                        </button>
+                        <button onclick="setFilter('Bridal Looks')" data-filter="Bridal Looks" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap">
+                            Bridal Looks (<span id="count-bridal">0</span>)
+                        </button>
+                        <button onclick="setFilter('Wedding Couples')" data-filter="Wedding Couples" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap">
+                            Couples (<span id="count-couples">0</span>)
+                        </button>
+                        <button onclick="setFilter('Salon Moments')" data-filter="Salon Moments" class="filter-btn px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors bg-cream text-olive-800 hover:bg-cream-dark whitespace-nowrap">
+                            Salon (<span id="count-salon">0</span>)
+                        </button>
+                    </div>
+
+                    <!-- Search Box & Add Button -->
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <div class="relative flex-1 md:w-72">
+                            <i class="ph ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-olive-400 text-base"></i>
+                            <input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Search title or alt text..."
+                                   class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                        </div>
+                        <button onclick="openAddModal()" class="px-4 py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-sm transition-all whitespace-nowrap">
+                            <i class="ph ph-plus text-base"></i> <span class="hidden sm:inline">Add Photo</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gallery Cards Grid -->
+            <div>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-serif text-2xl text-olive-900 font-semibold">Gallery Showcase Order</h2>
+                    <span class="text-xs text-olive-600 font-light">Use <i class="ph ph-arrow-up"></i> <i class="ph ph-arrow-down"></i> to reorder. Photos appear on the website in this exact order.</span>
+                </div>
+
+                <div id="gallery-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-olive-200 p-8">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-olive-50 flex items-center justify-center text-olive-500">
+                        <i class="ph ph-image-square text-3xl"></i>
+                    </div>
+                    <h3 class="font-serif text-2xl text-olive-900 mb-2">No photos found</h3>
+                    <p class="text-xs text-olive-600 max-w-sm mx-auto mb-6">No gallery photos match your current filter or search criteria.</p>
+                    <button onclick="openAddModal()" class="px-6 py-3 bg-olive-900 text-white text-xs uppercase tracking-wider font-semibold rounded-xl shadow-soft">
+                        Add First Photo
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-olive-100 py-6 text-center text-xs text-olive-600">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+                <div>Sudha's Beauty Care &amp; Bridal Studio &copy; 2006&ndash;2026</div>
+                <div class="flex items-center gap-4">
+                    <button onclick="exportJSON()" class="hover:underline flex items-center gap-1 text-olive-700">
+                        <i class="ph ph-download-simple"></i> Backup gallery.json
+                    </button>
+                    <span>&bull;</span>
+                    <a href="index.html" class="hover:underline text-olive-700">Back to Website</a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- ADD PHOTO MODAL -->
+    <!-- ======================================================== -->
+    <div id="add-modal" class="hidden fixed inset-0 z-50 bg-olive-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-olive-100 my-8">
+            <div class="flex items-center justify-between pb-4 border-b border-olive-100 mb-6">
+                <div>
+                    <h3 class="font-serif text-2xl text-olive-900 font-semibold">Add New Gallery Photo</h3>
+                    <p class="text-xs text-olive-600">Upload a client portrait or makeover photo</p>
+                </div>
+                <button onclick="closeAddModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <form id="add-form" onsubmit="handleAddPhoto(event)" class="space-y-5">
+                
+                <!-- Image Upload / Source Tabs -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-2">Photo Source</label>
+                    <div class="flex rounded-xl bg-cream p-1 mb-3">
+                        <button type="button" onclick="switchAddTab('file')" id="add-tab-file" class="flex-1 py-2 text-xs font-medium rounded-lg bg-white shadow-sm text-olive-900">Upload from Device</button>
+                        <button type="button" onclick="switchAddTab('url')" id="add-tab-url" class="flex-1 py-2 text-xs font-medium rounded-lg text-olive-700">Image Web URL</button>
+                    </div>
+
+                    <!-- File Drop Area -->
+                    <div id="add-file-area" class="border-2 border-dashed border-olive-200 rounded-2xl p-6 text-center hover:border-olive-400 transition-colors bg-cream-light/50 relative">
+                        <input type="file" id="add-file-input" accept="image/*" onchange="handleAddFileSelect(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div id="add-file-prompt">
+                            <i class="ph ph-cloud-arrow-up text-4xl text-olive-500 mb-2 block"></i>
+                            <span class="text-xs font-semibold text-olive-900 block">Click or drag &amp; drop to upload</span>
+                            <span class="text-[11px] text-olive-500 font-light block mt-1">Supports JPEG, PNG, WebP (auto-optimized for web)</span>
+                        </div>
+                        <div id="add-file-preview" class="hidden">
+                            <img id="add-preview-img" src="" alt="Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft mb-2">
+                            <span id="add-file-info" class="text-xs text-olive-600 block"></span>
+                            <button type="button" onclick="resetAddFile()" class="mt-2 text-xs text-rose-600 hover:underline">Choose another photo</button>
+                        </div>
+                    </div>
+
+                    <!-- URL Input Area -->
+                    <div id="add-url-area" class="hidden">
+                        <input type="url" id="add-url-input" oninput="handleAddUrlChange(this.value)" placeholder="https://example.com/photo.jpg"
+                               class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                        <div id="add-url-preview-container" class="hidden mt-3">
+                            <img id="add-url-preview-img" src="" alt="URL Preview" class="max-h-52 mx-auto rounded-xl object-cover shadow-soft">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Photo Title *</label>
+                    <input type="text" id="add-title" required placeholder="e.g. Traditional Kerala Bridal Makeover"
+                           class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                </div>
+
+                <!-- Alt Text (for SEO) -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">SEO Alt Description *</label>
+                    <input type="text" id="add-alt" required placeholder="e.g. South Indian bride in red silk saree with gold temple jewellery"
+                           class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                    <span class="text-[10px] text-olive-500 mt-1 block">Crucial for Google Image search ranking in Mananthavady.</span>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Category</label>
+                    <select id="add-category" class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                        <option value="Bridal Looks">Bridal Looks</option>
+                        <option value="Wedding Couples">Wedding Couples</option>
+                        <option value="Salon Moments">Salon Moments</option>
+                        <option value="Pre-Bridal Packages">Pre-Bridal Packages</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-olive-100">
+                    <button type="button" onclick="closeAddModal()" class="px-5 py-2.5 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft flex items-center gap-1.5">
+                        <i class="ph ph-plus"></i> Add to Gallery
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- EDIT PHOTO MODAL -->
+    <!-- ======================================================== -->
+    <div id="edit-modal" class="hidden fixed inset-0 z-50 bg-olive-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border border-olive-100 my-8">
+            <div class="flex items-center justify-between pb-4 border-b border-olive-100 mb-6">
+                <div>
+                    <h3 class="font-serif text-2xl text-olive-900 font-semibold">Edit Gallery Photo</h3>
+                    <p class="text-xs text-olive-600">Update photo details, SEO text, or replace image</p>
+                </div>
+                <button onclick="closeEditModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <form id="edit-form" onsubmit="handleSaveEdit(event)" class="space-y-5">
+                <input type="hidden" id="edit-id">
+
+                <!-- Current Thumbnail & Replace Option -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-2">Photo Preview</label>
+                    <div class="flex items-center gap-4 bg-cream p-3 rounded-2xl">
+                        <img id="edit-preview-img" src="" alt="Thumbnail" class="w-20 h-24 object-cover rounded-xl border border-olive-200 shadow-sm">
+                        <div class="flex-1 text-xs space-y-1.5">
+                            <div class="font-medium text-olive-900 truncate" id="edit-current-src-text"></div>
+                            <label class="inline-flex items-center gap-1 text-[11px] font-semibold text-olive-800 bg-white px-3 py-1.5 rounded-lg border border-olive-200 cursor-pointer hover:bg-olive-50 transition-colors">
+                                <i class="ph ph-upload-simple"></i> Replace Image File
+                                <input type="file" id="edit-file-input" accept="image/*" onchange="handleEditFileSelect(this)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Photo Title *</label>
+                    <input type="text" id="edit-title" required class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                </div>
+
+                <!-- Alt Text -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">SEO Alt Description *</label>
+                    <input type="text" id="edit-alt" required class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Category</label>
+                    <select id="edit-category" class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light">
+                        <option value="Bridal Looks">Bridal Looks</option>
+                        <option value="Wedding Couples">Wedding Couples</option>
+                        <option value="Salon Moments">Salon Moments</option>
+                        <option value="Pre-Bridal Packages">Pre-Bridal Packages</option>
+                    </select>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-olive-100">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft flex items-center gap-1.5">
+                        <i class="ph ph-check"></i> Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- DELETE CONFIRMATION MODAL -->
+    <!-- ======================================================== -->
+    <div id="delete-modal" class="hidden fixed inset-0 z-50 bg-olive-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 sm:p-8 shadow-2xl border border-olive-100 text-center animate-fade-in">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center text-3xl">
+                <i class="ph ph-trash"></i>
+            </div>
+            <h3 class="font-serif text-2xl text-olive-900 mb-2">Delete Photo?</h3>
+            <p class="text-xs text-olive-700 font-light mb-6">
+                Are you sure you want to remove <strong id="delete-photo-title" class="font-semibold text-olive-900"></strong> from the gallery?
+            </p>
+            <div class="flex items-center gap-3">
+                <button type="button" onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl border border-olive-200 text-olive-700 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium">Cancel</button>
+                <button type="button" onclick="confirmDelete()" class="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- SETTINGS & GITHUB CONFIG MODAL -->
+    <!-- ======================================================== -->
+    <div id="settings-modal" class="hidden fixed inset-0 z-50 bg-olive-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-olive-100 my-8">
+            <div class="flex items-center justify-between pb-4 border-b border-olive-100 mb-6">
+                <div>
+                    <h3 class="font-serif text-2xl text-olive-900 font-semibold">Settings &amp; Cloud Sync</h3>
+                    <p class="text-xs text-olive-600">Configure GitHub deployment credentials</p>
+                </div>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full hover:bg-olive-50 flex items-center justify-center text-olive-600 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Admin Passcode / PIN</label>
+                    <input type="password" id="setting-pin" placeholder="Enter new passcode (default: 2006)"
+                           class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light font-mono">
+                    <span class="text-[10px] text-olive-500 mt-1 block">Leave blank to keep your current passcode.</span>
+                </div>
+
+                <div class="pt-2 border-t border-olive-100">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold">GitHub Personal Access Token (PAT)</label>
+                        <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">Stored in browser</span>
+                    </div>
+                    <input type="password" id="setting-github-token" placeholder="github_pat_..."
+                           class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light font-mono">
+                    <p class="text-[10px] text-olive-500 mt-1 leading-relaxed">
+                        Enables 1-click cloud publishing directly to your GitHub repository (<code>sudhasbridalstudio1234-source/sudhas</code>).
+                    </p>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-wider text-olive-800 font-semibold mb-1.5">Target GitHub Repository</label>
+                    <input type="text" id="setting-github-repo" value="sudhasbridalstudio1234-source/sudhas"
+                           class="w-full px-4 py-3 rounded-xl border border-olive-200 text-xs focus:outline-none focus:border-olive-500 bg-cream-light font-mono">
+                </div>
+
+                <div class="flex items-center justify-between pt-4 border-t border-olive-100">
+                    <button type="button" onclick="testGitHubConnection()" class="px-4 py-2.5 rounded-xl border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium flex items-center gap-1.5">
+                        <i class="ph ph-plug text-base"></i> Test Connection
+                    </button>
+                    <button type="submit" class="px-6 py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold shadow-soft">
+                        Save Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- PUBLISHING PROGRESS MODAL -->
+    <!-- ======================================================== -->
+    <div id="publish-modal" class="hidden fixed inset-0 z-50 bg-olive-900/70 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-olive-100 text-center animate-fade-in">
+            <div id="publish-spinner" class="w-16 h-16 mx-auto mb-6 relative flex items-center justify-center">
+                <div class="w-16 h-16 rounded-full border-4 border-olive-200 border-t-olive-900 animate-spin"></div>
+                <i class="ph ph-cloud-arrow-up absolute text-2xl text-olive-900"></i>
+            </div>
+            <div id="publish-success-icon" class="hidden w-16 h-16 mx-auto mb-6 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl">
+                <i class="ph ph-check-circle"></i>
+            </div>
+            <h3 id="publish-title" class="font-serif text-2xl text-olive-900 mb-2">Publishing to Website...</h3>
+            <p id="publish-status" class="text-xs text-olive-600 font-light mb-6">Uploading changes to GitHub repository...</p>
+            <div id="publish-actions" class="hidden">
+                <button onclick="closePublishModal()" class="w-full py-3 bg-olive-900 text-white rounded-xl text-xs uppercase tracking-widest font-semibold shadow-soft hover:bg-olive-800 transition-colors">
+                    Done
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm bg-olive-900 text-white px-5 py-4 rounded-2xl shadow-2xl border border-olive-700 transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-3 text-xs">
+        <i id="toast-icon" class="ph ph-check-circle text-xl text-emerald-400"></i>
+        <span id="toast-msg">Action completed</span>
+    </div>
+
+    <!-- Admin Logic Script -->
+    <script src="assets/js/admin.js"></script>
+</body>
+</html>

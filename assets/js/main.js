@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initForms();
     initFloatingWhatsApp();
     populateConfigData();
+    initDynamicGallery();
 });
 
 // ==========================================
@@ -221,4 +222,86 @@ function initFloatingWhatsApp() {
     if (floatBtn) {
         floatBtn.href = `https://wa.me/${CONFIG.WHATSAPP_PARLOUR}?text=${encodeURIComponent("Hello! I would like to know more about your services.")}`;
     }
+}
+
+// ==========================================
+// DYNAMIC GALLERY SYNC & PREVIEW
+// ==========================================
+async function initDynamicGallery() {
+    const grid = document.getElementById('gallery-grid');
+    if (!grid) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPreview = urlParams.get('preview') === 'true';
+    let galleryData = null;
+
+    if (isPreview) {
+        const draft = localStorage.getItem('sudha_gallery_draft');
+        if (draft) {
+            try {
+                galleryData = JSON.parse(draft);
+                showPreviewBanner();
+            } catch (e) {}
+        }
+    }
+
+    if (!galleryData) {
+        try {
+            const res = await fetch('assets/data/gallery.json?v=' + Date.now());
+            if (res.ok) {
+                galleryData = await res.json();
+            }
+        } catch (err) {
+            // Keep hardcoded server-rendered cards
+            return;
+        }
+    }
+
+    if (!galleryData || !Array.isArray(galleryData) || galleryData.length === 0) {
+        return;
+    }
+
+    // Render gallery items dynamically
+    grid.innerHTML = '';
+    galleryData.forEach((item, index) => {
+        const card = document.createElement('div');
+        const delayClass = index % 3 === 1 ? 'delay-100' : (index % 3 === 2 ? 'delay-200' : '');
+        card.className = `aspect-[3/4] scroll-reveal rounded-xl sm:rounded-2xl overflow-hidden group cursor-pointer relative shadow-soft border-[4px] sm:border-[6px] border-white bg-white ${delayClass}`;
+        card.setAttribute('onclick', `openLightbox('${item.pendingFileData || item.src}')`);
+
+        card.innerHTML = `
+            <img src="${item.pendingFileData || item.src}" alt="${escapeHtml(item.alt || item.title || 'Sudha’s Bridal Studio')}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+            <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+
+    // Re-observe scroll reveal elements
+    if (typeof initScrollReveal === 'function') {
+        initScrollReveal();
+    }
+}
+
+function showPreviewBanner() {
+    if (document.getElementById('preview-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'preview-banner';
+    banner.className = 'fixed top-0 left-0 right-0 z-[100] bg-amber-500 text-white py-2 px-4 text-center text-xs font-semibold uppercase tracking-wider shadow-md flex items-center justify-center gap-3';
+    banner.innerHTML = `
+        <span><i class="ph ph-eye text-base"></i> Admin Draft Preview Mode — Viewing Unpublished Changes</span>
+        <a href="admin.html" class="underline text-amber-950 font-bold ml-2">Return to Admin</a>
+    `;
+    document.body.prepend(banner);
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 }
