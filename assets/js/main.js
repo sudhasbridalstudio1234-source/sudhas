@@ -245,6 +245,19 @@ async function initDynamicGallery() {
         }
     }
 
+    // Check for saved admin edits directly (no GitHub token needed)
+    if (!galleryData) {
+        const liveSaved = localStorage.getItem('sudha_live_gallery');
+        if (liveSaved) {
+            try {
+                const parsed = JSON.parse(liveSaved);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    galleryData = parsed;
+                }
+            } catch (e) {}
+        }
+    }
+
     if (!galleryData) {
         try {
             const res = await fetch('assets/data/gallery.json?v=' + Date.now());

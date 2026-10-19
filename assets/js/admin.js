@@ -89,6 +89,7 @@ function handleLogout() {
 // ========================================================
 async function loadGalleryData() {
     const savedDraft = localStorage.getItem('sudha_gallery_draft');
+    const savedLive = localStorage.getItem('sudha_live_gallery');
     
     try {
         const res = await fetch('assets/data/gallery.json?t=' + Date.now());
@@ -108,8 +109,18 @@ async function loadGalleryData() {
             isDirty = true;
             updateSyncStatus();
         } catch (e) {
+            galleryItems = savedLive ? JSON.parse(savedLive) : JSON.parse(JSON.stringify(originalItems));
+            isDirty = false;
+        }
+    } else if (savedLive) {
+        try {
+            galleryItems = JSON.parse(savedLive);
+            isDirty = false;
+            updateSyncStatus();
+        } catch (e) {
             galleryItems = JSON.parse(JSON.stringify(originalItems));
             isDirty = false;
+            updateSyncStatus();
         }
     } else {
         galleryItems = JSON.parse(JSON.stringify(originalItems));
@@ -279,7 +290,8 @@ function updateSyncStatus() {
         banner.classList.remove('hidden');
         localStorage.setItem('sudha_gallery_draft', JSON.stringify(galleryItems));
     } else {
-        badge.innerText = "Synced";
+        const hasLiveSaved = !!localStorage.getItem('sudha_live_gallery');
+        badge.innerText = hasLiveSaved ? "Saved & Live" : "Synced";
         badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200";
         banner.classList.add('hidden');
         localStorage.removeItem('sudha_gallery_draft');
@@ -618,7 +630,7 @@ function handleAddPhoto(e) {
     updateStats();
     renderGallery();
     closeAddModal();
-    showToast("Photo added to gallery draft! Click Publish to deploy.", "success");
+    showToast("Photo added! Click 'Save Changes' to update your website.", "success");
 }
 
 // ========================================================
@@ -710,17 +722,59 @@ function confirmDelete() {
 }
 
 // ========================================================
+// DIRECT SAVE (WITHOUT GITHUB TOKEN)
+// ========================================================
+function saveChangesWithoutToken() {
+    try {
+        localStorage.setItem('sudha_live_gallery', JSON.stringify(galleryItems));
+        localStorage.removeItem('sudha_gallery_draft');
+        isDirty = false;
+        updateSyncStatus();
+        renderGallery();
+        showToast("Changes saved successfully to live website!", "success");
+
+        const modal = document.getElementById('direct-save-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    } catch (e) {
+        console.error("Local storage error:", e);
+        if (e.name === 'QuotaExceededError' || e.code === 22) {
+            alert("Browser storage limit reached. Please consider downloading the gallery.json backup or using Cloud Sync.");
+        } else {
+            alert("Could not save changes: " + e.message);
+        }
+    }
+}
+
+function closeDirectSaveModal() {
+    const modal = document.getElementById('direct-save-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+    }
+}
+
+// ========================================================
 // REVERT DRAFT
 // ========================================================
 function revertDraft() {
-    if (!confirm("Discard all unsaved draft changes and reload published gallery?")) return;
+    if (!confirm("Discard all unsaved draft changes and reload your saved gallery?")) return;
     localStorage.removeItem('sudha_gallery_draft');
-    galleryItems = JSON.parse(JSON.stringify(originalItems));
+    const savedLive = localStorage.getItem('sudha_live_gallery');
+    if (savedLive) {
+        try {
+            galleryItems = JSON.parse(savedLive);
+        } catch (e) {
+            galleryItems = JSON.parse(JSON.stringify(originalItems));
+        }
+    } else {
+        galleryItems = JSON.parse(JSON.stringify(originalItems));
+    }
     isDirty = false;
     updateSyncStatus();
     updateStats();
     renderGallery();
-    showToast("Draft changes discarded", "info");
+    showToast("Unsaved changes discarded", "info");
 }
 
 // ========================================================
@@ -917,6 +971,8 @@ async function publishToGitHub() {
 
         originalItems = JSON.parse(JSON.stringify(cleanItems));
         galleryItems = cleanItems;
+        localStorage.setItem('sudha_live_gallery', JSON.stringify(cleanItems));
+        localStorage.removeItem('sudha_gallery_draft');
         isDirty = false;
         updateSyncStatus();
         renderGallery();
