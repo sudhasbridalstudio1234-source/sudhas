@@ -1033,6 +1033,81 @@ function handleSaveSettings(e) {
     showToast("Admin settings saved successfully", "success");
 }
 
+// ========================================================
+// GITHUB API HELPERS
+// ========================================================
+function getGitHubAuthHeader(token) {
+    if (!token) return '';
+    const clean = token.trim();
+    if (clean.startsWith('Bearer ') || clean.startsWith('token ')) {
+        return clean;
+    }
+    if (clean.startsWith('ghp_')) {
+        return 'token ' + clean;
+    }
+    return 'Bearer ' + clean;
+}
+
+async function getGitHubFileSha(repo, filePath, branch, token) {
+    const authHeader = getGitHubAuthHeader(token);
+    
+    // 1. Direct contents endpoint
+    // IMPORTANT: Do NOT send custom 'Cache-Control' headers because GitHub's CORS Allow-Headers rejects it in browsers!
+    const contentsUrl = 'https://api.github.com/repos/' + repo + '/contents/' + filePath + '?ref=' + encodeURIComponent(branch) + '&_cb=' + Date.now();
+    
+    try {
+        const res = await fetch(contentsUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (res.status === 200) {
+            const data = await res.json();
+            if (data && data.sha) return data.sha;
+        } else if (res.status === 404) {
+            // New file: does not exist on GitHub yet
+            return null;
+        } else if (res.status === 401 || res.status === 403) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error('GitHub Authentication Failed (HTTP ' + res.status + '): ' + (err.message || 'Please check your Personal Access Token in Settings.'));
+        }
+    } catch (err) {
+        if (err.message && err.message.includes('Authentication Failed')) {
+            throw err;
+        }
+        console.warn('[GitHub API] Contents SHA lookup warning for ' + filePath + ':', err);
+    }
+
+    // 2. Tree fallback: query the branch git tree recursively
+    try {
+        const treeUrl = 'https://api.github.com/repos/' + repo + '/git/trees/' + encodeURIComponent(branch) + '?recursive=1&_cb=' + Date.now();
+        const treeRes = await fetch(treeUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': authHeader,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (treeRes.status === 200) {
+            const treeData = await treeRes.json();
+            if (treeData && Array.isArray(treeData.tree)) {
+                const match = treeData.tree.find(f => f.path === filePath);
+                if (match && match.sha) {
+                    return match.sha;
+                }
+            }
+        }
+    } catch (err) {
+        console.warn('[GitHub API] Tree SHA lookup warning for ' + filePath + ':', err);
+    }
+
+    return null;
+}
+
 async function testGitHubConnection() {
     const token = document.getElementById('setting-github-token').value.trim();
     const repo = document.getElementById('setting-github-repo').value.trim();
@@ -1043,18 +1118,18 @@ async function testGitHubConnection() {
     }
 
     try {
-        const res = await fetch(`https://api.github.com/repos/${repo}?t=${Date.now()}`, {
+        const res = await fetch('https://api.github.com/repos/' + repo + '?_cb=' + Date.now(), {
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Cache-Control': 'no-cache'
+                'Authorization': getGitHubAuthHeader(token),
+                'Accept': 'application/vnd.github.v3+json'
             }
         });
         if (res.ok) {
             const data = await res.json();
             alert(`Connection Successful!\nRepository: ${data.full_name}\nPush Permission: ${data.permissions?.push}`);
         } else {
-            alert(`GitHub connection failed: HTTP ${res.status}`);
+            const err = await res.json().catch(() => ({}));
+            alert('GitHub connection failed: HTTP ' + res.status + ' - ' + (err.message || res.statusText));
         }
     } catch (err) {
         alert("Connection error: " + err.message);
@@ -1088,6 +1163,8 @@ async function publishToGitHub() {
     if (title) title.innerText = "Publishing to Website...";
     if (status) status.innerText = "Connecting to GitHub repository...";
 
+    const authHeader = getGitHubAuthHeader(token);
+
     try {
         // Step 1: Upload any pending image files
         const itemsWithFiles = galleryItems.filter(i => i.pendingFileData);
@@ -1098,21 +1175,8 @@ async function publishToGitHub() {
             const base64Content = item.pendingFileData.split(',')[1];
             const filePath = item.src; // e.g. assets/images/gallery/gallery_...
 
-            // Check if file already exists to get SHA (with cache busting)
-            let fileSha = null;
-            try {
-                const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}?t=${Date.now()}`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Accept': 'application/vnd.github.v3+json',
-                        'Cache-Control': 'no-cache'
-                    }
-                });
-                if (checkRes.ok) {
-                    const checkData = await checkRes.json();
-                    fileSha = checkData.sha;
-                }
-            } catch (e) {}
+            // Check if file already exists on GitHub to obtain its SHA
+            const fileSha = await getGitHubFileSha(repo, filePath, DEFAULT_BRANCH, token);
 
             const bodyPayload = {
                 message: `Upload gallery photo: ${item.title}`,
@@ -1121,10 +1185,10 @@ async function publishToGitHub() {
             };
             if (fileSha) bodyPayload.sha = fileSha;
 
-            const putRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
+            const putRes = await fetch('https://api.github.com/repos/' + repo + '/contents/' + filePath, {
                 method: 'PUT',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': authHeader,
                     'Content-Type': 'application/json',
                     'Accept': 'application/vnd.github.v3+json'
                 },
@@ -1132,12 +1196,11 @@ async function publishToGitHub() {
             });
 
             if (!putRes.ok) {
-                const errData = await putRes.json();
+                const errData = await putRes.json().catch(() => ({}));
                 throw new Error(`Failed to upload ${filePath}: ${errData.message || putRes.statusText}`);
             }
 
-            // Note: Keep local pendingFileData preview active so user never sees a broken 404 image
-            // while GitHub Pages builds the new commit!
+            // Keep local preview active so user never sees a broken 404 image
             item.uploadedToGitHub = true;
         }
 
@@ -1157,20 +1220,8 @@ async function publishToGitHub() {
         const jsonString = JSON.stringify(cleanItems, null, 2);
         const jsonBase64 = btoa(unescape(encodeURIComponent(jsonString)));
 
-        let jsonSha = null;
-        try {
-            const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/assets/data/gallery.json?t=${Date.now()}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Cache-Control': 'no-cache'
-                }
-            });
-            if (shaRes.ok) {
-                const shaData = await shaRes.json();
-                jsonSha = shaData.sha;
-            }
-        } catch (e) {}
+        // Retrieve existing gallery.json SHA with automatic fallback
+        let jsonSha = await getGitHubFileSha(repo, 'assets/data/gallery.json', DEFAULT_BRANCH, token);
 
         const jsonPayload = {
             message: `Update gallery showcase (${cleanItems.length} photos) via Admin Panel`,
@@ -1179,18 +1230,36 @@ async function publishToGitHub() {
         };
         if (jsonSha) jsonPayload.sha = jsonSha;
 
-        const updateRes = await fetch(`https://api.github.com/repos/${repo}/contents/assets/data/gallery.json`, {
+        let updateRes = await fetch('https://api.github.com/repos/' + repo + '/contents/assets/data/gallery.json', {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${token}`,
+                'Authorization': authHeader,
                 'Content-Type': 'application/json',
                 'Accept': 'application/vnd.github.v3+json'
             },
             body: JSON.stringify(jsonPayload)
         });
 
+        // If conflict (409) or missing sha (422), attempt one quick refetch and retry
+        if (!updateRes.ok && (updateRes.status === 409 || updateRes.status === 422)) {
+            console.warn("PUT returned " + updateRes.status + ", re-fetching fresh SHA and retrying once...");
+            const freshSha = await getGitHubFileSha(repo, 'assets/data/gallery.json', DEFAULT_BRANCH, token);
+            if (freshSha) {
+                jsonPayload.sha = freshSha;
+                updateRes = await fetch('https://api.github.com/repos/' + repo + '/contents/assets/data/gallery.json', {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': authHeader,
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/vnd.github.v3+json'
+                    },
+                    body: JSON.stringify(jsonPayload)
+                });
+            }
+        }
+
         if (!updateRes.ok) {
-            const errData = await updateRes.json();
+            const errData = await updateRes.json().catch(() => ({}));
             throw new Error(`Failed to update gallery.json: ${errData.message || updateRes.statusText}`);
         }
 
