@@ -1,6 +1,6 @@
 /**
  * Sudha's Beauty Care & Bridal Studio - Gallery Admin Controller
- * Includes Add, Edit, Delete, Reordering, Cropping & Spotlight Highlighting
+ * High-performance, robust photo management with Cropper.js, IndexedDB, and GitHub Cloud Sync
  */
 
 // Configuration Defaults
@@ -26,6 +26,120 @@ let cropContext = null; // 'add', 'add-url', 'edit', 'card'
 let cropTargetId = null;
 let currentCropRatio = 0.75; // 3:4 portrait default
 let cropScaleX = 1;
+
+// ========================================================
+// INDEXEDDB STORAGE ENGINE (Overcomes 5MB localStorage limit)
+// ========================================================
+const DB_NAME = 'SudhaGalleryDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'gallery_store';
+
+function openGalleryDB() {
+    return new Promise((resolve, reject) => {
+        if (!window.indexedDB) {
+            return reject(new Error("IndexedDB not supported in this browser"));
+        }
+        const request = window.indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(STORE_NAME)) {
+                db.createObjectStore(STORE_NAME);
+            }
+        };
+        request.onsuccess = (e) => resolve(e.target.result);
+        request.onerror = (e) => reject(e.target.error);
+    });
+}
+
+async function idbSet(key, value) {
+    try {
+        const db = await openGalleryDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.put(value, key);
+            req.onsuccess = () => resolve(true);
+            req.onerror = () => reject(req.error);
+        });
+    } catch (e) {
+        console.warn("IndexedDB set warning:", e);
+        return false;
+    }
+}
+
+async function idbGet(key) {
+    try {
+        const db = await openGalleryDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+        });
+    } catch (e) {
+        console.warn("IndexedDB get warning:", e);
+        return null;
+    }
+}
+
+async function idbRemove(key) {
+    try {
+        const db = await openGalleryDB();
+        return new Promise((resolve) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            const req = store.delete(key);
+            req.onsuccess = () => resolve(true);
+            req.onerror = () => resolve(false);
+        });
+    } catch (e) {
+        return false;
+    }
+}
+
+function saveToLocalStorageSafe(key, data) {
+    try {
+        localStorage.setItem(key, JSON.stringify(data));
+        return true;
+    } catch (e) {
+        // If quota exceeded, strip large pendingFileData from localStorage copy
+        // because the full version is already preserved in IndexedDB
+        console.warn(`localStorage quota exceeded for ${key}. Falling back to metadata-only copy:`, e);
+        try {
+            if (Array.isArray(data)) {
+                const lightweight = data.map(item => {
+                    const copy = { ...item };
+                    delete copy.pendingFileData;
+                    return copy;
+                });
+                localStorage.setItem(key, JSON.stringify(lightweight));
+                return true;
+            }
+        } catch (inner) {
+            console.warn("Could not save even lightweight copy to localStorage:", inner);
+        }
+        return false;
+    }
+}
+
+async function persistDraft() {
+    await idbSet('draft_gallery', galleryItems);
+    saveToLocalStorageSafe('sudha_gallery_draft', galleryItems);
+}
+
+async function clearDraft() {
+    await idbRemove('draft_gallery');
+    try {
+        localStorage.removeItem('sudha_gallery_draft');
+    } catch (e) {}
+}
+
+async function persistLive() {
+    await idbSet('live_gallery', galleryItems);
+    saveToLocalStorageSafe('sudha_live_gallery', galleryItems);
+    await clearDraft();
+}
 
 // ========================================================
 // INITIALIZATION
@@ -88,9 +202,7 @@ function handleLogout() {
 // DATA LOADING
 // ========================================================
 async function loadGalleryData() {
-    const savedDraft = localStorage.getItem('sudha_gallery_draft');
-    const savedLive = localStorage.getItem('sudha_live_gallery');
-    
+    // 1. Fetch official gallery.json
     try {
         const res = await fetch('assets/data/gallery.json?t=' + Date.now());
         if (res.ok) {
@@ -103,31 +215,36 @@ async function loadGalleryData() {
         originalItems = getBaselineFallbackItems();
     }
 
-    if (savedDraft) {
-        try {
-            galleryItems = JSON.parse(savedDraft);
-            isDirty = true;
-            updateSyncStatus();
-        } catch (e) {
-            galleryItems = savedLive ? JSON.parse(savedLive) : JSON.parse(JSON.stringify(originalItems));
-            isDirty = false;
+    // 2. Check draft (IndexedDB first, fallback to localStorage)
+    let draftData = await idbGet('draft_gallery');
+    if (!draftData) {
+        const draftStr = localStorage.getItem('sudha_gallery_draft');
+        if (draftStr) {
+            try { draftData = JSON.parse(draftStr); } catch (e) {}
         }
-    } else if (savedLive) {
-        try {
-            galleryItems = JSON.parse(savedLive);
-            isDirty = false;
-            updateSyncStatus();
-        } catch (e) {
-            galleryItems = JSON.parse(JSON.stringify(originalItems));
-            isDirty = false;
-            updateSyncStatus();
+    }
+
+    // 3. Check live saved (IndexedDB first, fallback to localStorage)
+    let liveData = await idbGet('live_gallery');
+    if (!liveData) {
+        const liveStr = localStorage.getItem('sudha_live_gallery');
+        if (liveStr) {
+            try { liveData = JSON.parse(liveStr); } catch (e) {}
         }
+    }
+
+    if (draftData && Array.isArray(draftData) && draftData.length > 0) {
+        galleryItems = draftData;
+        isDirty = true;
+    } else if (liveData && Array.isArray(liveData) && liveData.length > 0) {
+        galleryItems = liveData;
+        isDirty = false;
     } else {
         galleryItems = JSON.parse(JSON.stringify(originalItems));
         isDirty = false;
-        updateSyncStatus();
     }
 
+    updateSyncStatus();
     renderGallery();
     updateStats();
 }
@@ -153,6 +270,7 @@ function getBaselineFallbackItems() {
 function renderGallery() {
     const container = document.getElementById('gallery-container');
     const emptyState = document.getElementById('empty-state');
+    if (!container) return;
     container.innerHTML = '';
 
     // Filter & Search
@@ -173,10 +291,10 @@ function renderGallery() {
     });
 
     if (filtered.length === 0) {
-        emptyState.classList.remove('hidden');
+        if (emptyState) emptyState.classList.remove('hidden');
         return;
     } else {
-        emptyState.classList.add('hidden');
+        if (emptyState) emptyState.classList.add('hidden');
     }
 
     filtered.forEach((item) => {
@@ -190,7 +308,7 @@ function renderGallery() {
         
         card.innerHTML = `
             <div class="aspect-[3/4] bg-olive-100 relative overflow-hidden">
-                <img src="${displaySrc}" alt="${escapeHtml(item.alt || item.title)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                <img src="${displaySrc}" alt="${escapeHtml(item.alt || item.title)}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" onerror="this.onerror=null; this.src='assets/images/gallery_new_1.jpg';">
                 
                 <!-- Order Badge -->
                 <div class="absolute top-2.5 left-2.5 px-2 py-0.5 bg-olive-900/80 backdrop-blur-sm rounded-lg text-white text-[10px] uppercase tracking-wider font-semibold">
@@ -214,7 +332,7 @@ function renderGallery() {
                     <i class="ph ph-crop text-xs"></i> Crop
                 </button>
 
-                ${item.pendingFileData ? '<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded uppercase tracking-wider shadow-sm">Unsaved Edit</div>' : ''}
+                ${item.pendingFileData ? '<div class="absolute bottom-2.5 left-2.5 px-2 py-0.5 bg-emerald-600 text-white text-[9px] font-bold rounded uppercase tracking-wider shadow-sm">Unsaved Photo</div>' : ''}
             </div>
 
             <div class="p-4 flex-1 flex flex-col justify-between space-y-3">
@@ -271,16 +389,25 @@ function updateStats() {
     const couples = galleryItems.filter(i => (i.category || '').toLowerCase().includes('couple')).length;
     const salon = galleryItems.filter(i => (i.category || '').toLowerCase().includes('salon')).length;
 
-    document.getElementById('stat-total').innerText = total;
-    document.getElementById('stat-highlighted').innerText = highlighted;
-    document.getElementById('stat-bridal').innerText = bridal;
-    document.getElementById('stat-couples').innerText = couples;
+    const elTotal = document.getElementById('stat-total');
+    if (elTotal) elTotal.innerText = total;
+    const elHigh = document.getElementById('stat-highlighted');
+    if (elHigh) elHigh.innerText = highlighted;
+    const elBridal = document.getElementById('stat-bridal');
+    if (elBridal) elBridal.innerText = bridal;
+    const elCouples = document.getElementById('stat-couples');
+    if (elCouples) elCouples.innerText = couples;
 
-    document.getElementById('count-all').innerText = total;
-    document.getElementById('count-highlighted').innerText = highlighted;
-    document.getElementById('count-bridal').innerText = bridal;
-    document.getElementById('count-couples').innerText = couples;
-    document.getElementById('count-salon').innerText = salon;
+    const cAll = document.getElementById('count-all');
+    if (cAll) cAll.innerText = total;
+    const cHigh = document.getElementById('count-highlighted');
+    if (cHigh) cHigh.innerText = highlighted;
+    const cBridal = document.getElementById('count-bridal');
+    if (cBridal) cBridal.innerText = bridal;
+    const cCouples = document.getElementById('count-couples');
+    if (cCouples) cCouples.innerText = couples;
+    const cSalon = document.getElementById('count-salon');
+    if (cSalon) cSalon.innerText = salon;
 }
 
 function updateSyncStatus() {
@@ -288,16 +415,24 @@ function updateSyncStatus() {
     const banner = document.getElementById('unsaved-banner');
 
     if (isDirty) {
-        badge.innerText = "Unsaved Changes";
-        badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200";
-        banner.classList.remove('hidden');
-        localStorage.setItem('sudha_gallery_draft', JSON.stringify(galleryItems));
+        if (badge) {
+            badge.innerText = "Unsaved Changes";
+            badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200";
+        }
+        if (banner) {
+            banner.classList.remove('hidden');
+        }
+        persistDraft().catch(e => console.warn("persistDraft warning:", e));
     } else {
         const hasLiveSaved = !!localStorage.getItem('sudha_live_gallery');
-        badge.innerText = hasLiveSaved ? "Saved & Live" : "Synced";
-        badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200";
-        banner.classList.add('hidden');
-        localStorage.removeItem('sudha_gallery_draft');
+        if (badge) {
+            badge.innerText = hasLiveSaved ? "Saved & Live" : "Synced";
+            badge.className = "px-2.5 py-0.5 rounded-full text-[10px] font-medium uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200";
+        }
+        if (banner) {
+            banner.classList.add('hidden');
+        }
+        clearDraft().catch(e => console.warn("clearDraft warning:", e));
     }
 }
 
@@ -360,7 +495,7 @@ function openCropper(imageSrc, context, targetId = null) {
     cropScaleX = 1;
 
     const modal = document.getElementById('crop-modal');
-    modal.classList.remove('hidden');
+    if (modal) modal.classList.remove('hidden');
 
     // Clean up existing instance safely
     if (cropperInstance) {
@@ -480,7 +615,8 @@ function closeCropModal() {
         } catch (e) {}
         cropperInstance = null;
     }
-    document.getElementById('crop-modal').classList.add('hidden');
+    const modal = document.getElementById('crop-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 function applyCrop() {
@@ -492,8 +628,8 @@ function applyCrop() {
     let canvas = null;
     try {
         canvas = cropperInstance.getCroppedCanvas({
-            maxWidth: 1600,
-            maxHeight: 2000,
+            maxWidth: 1200,
+            maxHeight: 1600,
             imageSmoothingEnabled: true,
             imageSmoothingQuality: 'high'
         });
@@ -508,7 +644,7 @@ function applyCrop() {
 
     let croppedDataUrl = "";
     try {
-        croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        croppedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
     } catch (err) {
         console.error("Canvas toDataURL error:", err);
         alert("Could not extract image data.");
@@ -527,13 +663,13 @@ function applyCrop() {
     } else if (cropContext === 'edit') {
         tempEditFileData = {
             dataUri: croppedDataUrl,
-            filename: "cropped_" + Date.now() + ".jpg"
+            filename: getCleanImageFilename("crop", "photo")
         };
         document.getElementById('edit-preview-img').src = croppedDataUrl;
     } else if (cropContext === 'card') {
         const item = galleryItems.find(i => i.id === cropTargetId);
         if (item) {
-            const cleanName = "gallery_cropped_" + Date.now() + ".jpg";
+            const cleanName = getCleanImageFilename("gallery_crop", item.title || "photo");
             item.src = `assets/images/gallery/${cleanName}`;
             item.pendingFileData = croppedDataUrl;
             isDirty = true;
@@ -624,7 +760,7 @@ function handleAddFileSelect(input) {
         tempAddFileData = dataUri;
         tempAddFileName = filename;
         document.getElementById('add-preview-img').src = dataUri;
-        document.getElementById('add-file-info').innerText = `${file.name} (${Math.round(file.size / 1024)} KB)`;
+        document.getElementById('add-file-info').innerText = `${file.name} (Optimized)`;
         document.getElementById('add-file-prompt').classList.add('hidden');
         document.getElementById('add-file-preview').classList.remove('hidden');
     });
@@ -653,7 +789,7 @@ function handleAddPhoto(e) {
     let pendingData = null;
 
     if (tempAddFileData) {
-        const cleanName = "gallery_" + Date.now() + "_" + sanitizeFilename(tempAddFileName || "photo.jpg");
+        const cleanName = getCleanImageFilename("gallery", tempAddFileName || title || "photo");
         finalSrc = `assets/images/gallery/${cleanName}`;
         pendingData = tempAddFileData;
     } else if (urlInput) {
@@ -730,7 +866,7 @@ function handleSaveEdit(e) {
     item.highlight = document.getElementById('edit-highlight').checked;
 
     if (tempEditFileData) {
-        const cleanName = "gallery_" + Date.now() + "_" + sanitizeFilename(tempEditFileData.filename);
+        const cleanName = getCleanImageFilename("gallery", tempEditFileData.filename || item.title || "photo");
         item.src = `assets/images/gallery/${cleanName}`;
         item.pendingFileData = tempEditFileData.dataUri;
     }
@@ -740,7 +876,7 @@ function handleSaveEdit(e) {
     updateStats();
     renderGallery();
     closeEditModal();
-    showToast("Photo updated in draft!", "success");
+    showToast("Photo updated!", "success");
 }
 
 // ========================================================
@@ -769,31 +905,53 @@ function confirmDelete() {
     updateStats();
     renderGallery();
     closeDeleteModal();
-    showToast("Photo removed from gallery draft", "info");
+    showToast("Photo removed from gallery", "info");
 }
 
 // ========================================================
-// DIRECT SAVE (WITHOUT GITHUB TOKEN)
+// UNIFIED SAVE & PUBLISH HANDLERS
 // ========================================================
-function saveChangesWithoutToken() {
+async function saveChangesLocally() {
     try {
-        localStorage.setItem('sudha_live_gallery', JSON.stringify(galleryItems));
-        localStorage.removeItem('sudha_gallery_draft');
+        await persistLive();
         isDirty = false;
         updateSyncStatus();
         renderGallery();
-        showToast("Changes saved successfully to live website!", "success");
+        showToast("Changes saved locally to live website!", "success");
 
         const modal = document.getElementById('direct-save-modal');
         if (modal) {
             modal.classList.remove('hidden');
         }
     } catch (e) {
-        console.error("Local storage error:", e);
-        if (e.name === 'QuotaExceededError' || e.code === 22) {
-            alert("Browser storage limit reached. Please consider downloading the gallery.json backup or using Cloud Sync.");
-        } else {
-            alert("Could not save changes: " + e.message);
+        console.error("Local save error:", e);
+        alert("Could not save changes: " + e.message);
+    }
+}
+
+// Backwards compatibility alias
+function saveChangesWithoutToken() {
+    saveChangesLocally();
+}
+
+async function handleMainSave() {
+    const token = localStorage.getItem('sudha_github_token');
+    
+    // Always persist locally first so edits are never lost
+    await persistLive();
+    isDirty = false;
+    updateSyncStatus();
+    renderGallery();
+
+    if (token) {
+        // If GitHub token is configured, proceed to cloud sync
+        publishToGitHub();
+    } else {
+        // If no token, show confirmation modal with Cloud Sync option
+        showToast("Changes saved successfully to live website!", "success");
+        const modal = document.getElementById('direct-save-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
         }
     }
 }
@@ -808,19 +966,24 @@ function closeDirectSaveModal() {
 // ========================================================
 // REVERT DRAFT
 // ========================================================
-function revertDraft() {
+async function revertDraft() {
     if (!confirm("Discard all unsaved draft changes and reload your saved gallery?")) return;
-    localStorage.removeItem('sudha_gallery_draft');
-    const savedLive = localStorage.getItem('sudha_live_gallery');
-    if (savedLive) {
-        try {
-            galleryItems = JSON.parse(savedLive);
-        } catch (e) {
-            galleryItems = JSON.parse(JSON.stringify(originalItems));
+    await clearDraft();
+
+    let savedLive = await idbGet('live_gallery');
+    if (!savedLive) {
+        const liveStr = localStorage.getItem('sudha_live_gallery');
+        if (liveStr) {
+            try { savedLive = JSON.parse(liveStr); } catch (e) {}
         }
+    }
+
+    if (savedLive && Array.isArray(savedLive) && savedLive.length > 0) {
+        galleryItems = savedLive;
     } else {
         galleryItems = JSON.parse(JSON.stringify(originalItems));
     }
+
     isDirty = false;
     updateSyncStatus();
     updateStats();
@@ -831,8 +994,8 @@ function revertDraft() {
 // ========================================================
 // PREVIEW DRAFT
 // ========================================================
-function previewDraft() {
-    localStorage.setItem('sudha_gallery_draft', JSON.stringify(galleryItems));
+async function previewDraft() {
+    await persistDraft();
     window.open('./?preview=true#gallery', '_blank');
 }
 
@@ -880,15 +1043,16 @@ async function testGitHubConnection() {
     }
 
     try {
-        const res = await fetch(`https://api.github.com/repos/${repo}`, {
+        const res = await fetch(`https://api.github.com/repos/${repo}?t=${Date.now()}`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Accept': 'application/vnd.github.v3+json'
+                'Accept': 'application/vnd.github.v3+json',
+                'Cache-Control': 'no-cache'
             }
         });
         if (res.ok) {
             const data = await res.json();
-            alert(`Connection Successful!\nRepository: ${data.full_name}\nPermissions: Push=${data.permissions?.push}`);
+            alert(`Connection Successful!\nRepository: ${data.full_name}\nPush Permission: ${data.permissions?.push}`);
         } else {
             alert(`GitHub connection failed: HTTP ${res.status}`);
         }
@@ -905,7 +1069,7 @@ async function publishToGitHub() {
     const repo = localStorage.getItem('sudha_github_repo') || DEFAULT_REPO;
 
     if (!token) {
-        alert("GitHub Personal Access Token is required to publish changes.\n\nPlease open Settings and enter your GitHub Token.");
+        alert("GitHub Personal Access Token is required for Cloud Sync.\n\nPlease open Settings and enter your GitHub Token.");
         openSettingsModal();
         return;
     }
@@ -917,28 +1081,32 @@ async function publishToGitHub() {
     const status = document.getElementById('publish-status');
     const actions = document.getElementById('publish-actions');
 
-    modal.classList.remove('hidden');
-    spinner.classList.remove('hidden');
-    successIcon.classList.add('hidden');
-    actions.classList.add('hidden');
-    title.innerText = "Publishing to Website...";
-    status.innerText = "Connecting to GitHub repository...";
+    if (modal) modal.classList.remove('hidden');
+    if (spinner) spinner.classList.remove('hidden');
+    if (successIcon) successIcon.classList.add('hidden');
+    if (actions) actions.classList.add('hidden');
+    if (title) title.innerText = "Publishing to Website...";
+    if (status) status.innerText = "Connecting to GitHub repository...";
 
     try {
         // Step 1: Upload any pending image files
         const itemsWithFiles = galleryItems.filter(i => i.pendingFileData);
         for (let idx = 0; idx < itemsWithFiles.length; idx++) {
             const item = itemsWithFiles[idx];
-            status.innerText = `Uploading image ${idx + 1} of ${itemsWithFiles.length}...`;
+            if (status) status.innerText = `Uploading image ${idx + 1} of ${itemsWithFiles.length}...`;
 
             const base64Content = item.pendingFileData.split(',')[1];
             const filePath = item.src; // e.g. assets/images/gallery/gallery_...
 
-            // Check if file already exists to get SHA
+            // Check if file already exists to get SHA (with cache busting)
             let fileSha = null;
             try {
-                const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
+                const checkRes = await fetch(`https://api.github.com/repos/${repo}/contents/${filePath}?t=${Date.now()}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Cache-Control': 'no-cache'
+                    }
                 });
                 if (checkRes.ok) {
                     const checkData = await checkRes.json();
@@ -968,11 +1136,13 @@ async function publishToGitHub() {
                 throw new Error(`Failed to upload ${filePath}: ${errData.message || putRes.statusText}`);
             }
 
-            delete item.pendingFileData;
+            // Note: Keep local pendingFileData preview active so user never sees a broken 404 image
+            // while GitHub Pages builds the new commit!
+            item.uploadedToGitHub = true;
         }
 
         // Step 2: Upload updated gallery.json
-        status.innerText = "Updating gallery database (assets/data/gallery.json)...";
+        if (status) status.innerText = "Updating gallery database (assets/data/gallery.json)...";
 
         const cleanItems = galleryItems.map(i => ({
             id: i.id,
@@ -989,8 +1159,12 @@ async function publishToGitHub() {
 
         let jsonSha = null;
         try {
-            const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/assets/data/gallery.json`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+            const shaRes = await fetch(`https://api.github.com/repos/${repo}/contents/assets/data/gallery.json?t=${Date.now()}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Cache-Control': 'no-cache'
+                }
             });
             if (shaRes.ok) {
                 const shaData = await shaRes.json();
@@ -1021,30 +1195,29 @@ async function publishToGitHub() {
         }
 
         originalItems = JSON.parse(JSON.stringify(cleanItems));
-        galleryItems = cleanItems;
-        localStorage.setItem('sudha_live_gallery', JSON.stringify(cleanItems));
-        localStorage.removeItem('sudha_gallery_draft');
+        await persistLive();
         isDirty = false;
         updateSyncStatus();
         renderGallery();
 
-        spinner.classList.add('hidden');
-        successIcon.classList.remove('hidden');
-        title.innerText = "Published Successfully!";
-        status.innerHTML = `Changes are committed to GitHub! GitHub Pages will refresh the live website in <strong>~30–60 seconds</strong>.`;
-        actions.classList.remove('hidden');
+        if (spinner) spinner.classList.add('hidden');
+        if (successIcon) successIcon.classList.remove('hidden');
+        if (title) title.innerText = "Published Successfully!";
+        if (status) status.innerHTML = `Changes are committed to GitHub! GitHub Pages will refresh the live website in <strong>~30–60 seconds</strong>.`;
+        if (actions) actions.classList.remove('hidden');
 
     } catch (err) {
         console.error("Publishing error:", err);
-        spinner.classList.add('hidden');
-        title.innerText = "Publishing Failed";
-        status.innerHTML = `<span class="text-rose-600">${escapeHtml(err.message)}</span><br><br>You can export a backup of your gallery.json below.`;
-        actions.classList.remove('hidden');
+        if (spinner) spinner.classList.add('hidden');
+        if (title) title.innerText = "Publishing Failed";
+        if (status) status.innerHTML = `<span class="text-rose-600">${escapeHtml(err.message)}</span><br><br>You can export a backup of your gallery.json below.`;
+        if (actions) actions.classList.remove('hidden');
     }
 }
 
 function closePublishModal() {
-    document.getElementById('publish-modal').classList.add('hidden');
+    const modal = document.getElementById('publish-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 // ========================================================
@@ -1073,38 +1246,50 @@ function exportJSON() {
 // ========================================================
 // UTILITIES (COMPRESSION & SANITIZATION)
 // ========================================================
+function getCleanImageFilename(prefix, originalName) {
+    const base = (originalName || 'photo')
+        .replace(/\.[^/.]+$/, '') // remove existing extension
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]/g, '_')
+        .replace(/_+/g, '_')
+        .slice(0, 30);
+    return `${prefix}_${Date.now()}_${base || 'photo'}.jpg`;
+}
+
 function processAndCompressImage(file, callback) {
     const reader = new FileReader();
     reader.onload = (e) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 1400;
-            const MAX_HEIGHT = 1800;
+            const MAX_WIDTH = 1200;
+            const MAX_HEIGHT = 1600;
             let width = img.width;
             let height = img.height;
 
-            if (width > height) {
-                if (width > MAX_WIDTH) {
-                    height *= MAX_WIDTH / width;
-                    width = MAX_WIDTH;
-                }
-            } else {
-                if (height > MAX_HEIGHT) {
-                    width *= MAX_HEIGHT / height;
-                    height = MAX_HEIGHT;
-                }
+            if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+                width = Math.round(width * ratio);
+                height = Math.round(height * ratio);
             }
 
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
             ctx.drawImage(img, 0, 0, width, height);
 
-            const compressedDataUri = canvas.toDataURL('image/jpeg', 0.90);
-            callback(compressedDataUri, file.name.replace(/\.[^/.]+$/, ".jpg"));
+            const compressedDataUri = canvas.toDataURL('image/jpeg', 0.82);
+            callback(compressedDataUri, file.name);
+        };
+        img.onerror = () => {
+            alert("Could not load image file. Please try another image.");
         };
         img.src = e.target.result;
+    };
+    reader.onerror = () => {
+        alert("Failed to read file.");
     };
     reader.readAsDataURL(file);
 }
@@ -1127,6 +1312,7 @@ function showToast(msg, type = "success") {
     const toast = document.getElementById('toast');
     const msgEl = document.getElementById('toast-msg');
     const icon = document.getElementById('toast-icon');
+    if (!toast || !msgEl) return;
 
     msgEl.innerText = msg;
     if (type === 'success') {

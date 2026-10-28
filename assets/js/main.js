@@ -227,6 +227,27 @@ function initFloatingWhatsApp() {
 // ==========================================
 // DYNAMIC GALLERY SYNC & PREVIEW
 // ==========================================
+async function getStoredGalleryData(key) {
+    if (!window.indexedDB) return null;
+    try {
+        const db = await new Promise((resolve, reject) => {
+            const req = window.indexedDB.open('SudhaGalleryDB', 1);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+        if (!db.objectStoreNames.contains('gallery_store')) return null;
+        return new Promise((resolve) => {
+            const tx = db.transaction('gallery_store', 'readonly');
+            const store = tx.objectStore('gallery_store');
+            const req = store.get(key);
+            req.onsuccess = () => resolve(req.result || null);
+            req.onerror = () => resolve(null);
+        });
+    } catch (e) {
+        return null;
+    }
+}
+
 async function initDynamicGallery() {
     const grid = document.getElementById('gallery-grid');
     if (!grid) return;
@@ -236,25 +257,30 @@ async function initDynamicGallery() {
     let galleryData = null;
 
     if (isPreview) {
-        const draft = localStorage.getItem('sudha_gallery_draft');
-        if (draft) {
-            try {
-                galleryData = JSON.parse(draft);
-                showPreviewBanner();
-            } catch (e) {}
+        let draft = await getStoredGalleryData('draft_gallery');
+        if (!draft) {
+            const draftStr = localStorage.getItem('sudha_gallery_draft');
+            if (draftStr) {
+                try { draft = JSON.parse(draftStr); } catch (e) {}
+            }
+        }
+        if (draft && Array.isArray(draft) && draft.length > 0) {
+            galleryData = draft;
+            showPreviewBanner();
         }
     }
 
     // Check for saved admin edits directly (no GitHub token needed)
     if (!galleryData) {
-        const liveSaved = localStorage.getItem('sudha_live_gallery');
-        if (liveSaved) {
-            try {
-                const parsed = JSON.parse(liveSaved);
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                    galleryData = parsed;
-                }
-            } catch (e) {}
+        let liveSaved = await getStoredGalleryData('live_gallery');
+        if (!liveSaved) {
+            const liveStr = localStorage.getItem('sudha_live_gallery');
+            if (liveStr) {
+                try { liveSaved = JSON.parse(liveStr); } catch (e) {}
+            }
+        }
+        if (liveSaved && Array.isArray(liveSaved) && liveSaved.length > 0) {
+            galleryData = liveSaved;
         }
     }
 
@@ -293,7 +319,7 @@ async function initDynamicGallery() {
 
         card.innerHTML = `
             ${highlightBadge}
-            <img src="${item.pendingFileData || item.src}" alt="${escapeHtml(item.alt || item.title || 'Sudha’s Bridal Studio')}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy">
+            <img src="${item.pendingFileData || item.src}" alt="${escapeHtml(item.alt || item.title || 'Sudha’s Bridal Studio')}" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" loading="lazy" onerror="this.onerror=null; this.src='assets/images/gallery_new_1.jpg';">
             <div class="absolute inset-0 bg-olive-900/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <i class="ph ph-magnifying-glass-plus text-white text-3xl font-light"></i>
             </div>

@@ -145,9 +145,13 @@
                 </div>
 
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <button onclick="saveChangesWithoutToken()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-soft transition-all" title="Save changes directly to live website">
+                    <button onclick="handleMainSave()" class="px-4 py-2 sm:px-5 sm:py-2.5 rounded-xl bg-olive-900 hover:bg-olive-800 text-white text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 shadow-soft transition-all" title="Save changes to live website">
                         <i class="ph ph-floppy-disk text-base font-bold"></i>
                         <span>Save Changes</span>
+                    </button>
+                    <button onclick="publishToGitHub()" class="px-3 py-2 sm:px-3.5 sm:py-2.5 rounded-xl border border-olive-300 bg-olive-50/80 hover:bg-olive-100 text-olive-900 text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 transition-colors shadow-xs" title="Sync directly to GitHub Pages cloud">
+                        <i class="ph ph-cloud-arrow-up text-base text-olive-700"></i>
+                        <span class="hidden md:inline">Cloud Sync</span>
                     </button>
                     <a href="./" target="_blank" class="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl border border-olive-200 text-olive-800 hover:bg-olive-50 text-xs uppercase tracking-wider font-medium flex items-center gap-1.5 transition-colors" title="View live website">
                         <i class="ph ph-arrow-square-out text-base"></i>
@@ -170,9 +174,10 @@
                     <i class="ph ph-warning-circle text-lg text-amber-600"></i>
                     <span><strong>Unsaved Changes:</strong> You have modified gallery photos. Click <strong>Save Changes</strong> to update the live website.</span>
                 </div>
-                <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div class="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
                     <button onclick="revertDraft()" class="px-3 py-1.5 rounded-lg border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs uppercase tracking-wider">Discard</button>
-                    <button onclick="saveChangesWithoutToken()" class="px-5 py-1.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs uppercase tracking-wider font-semibold shadow-sm flex items-center gap-1.5">
+                    <button onclick="saveChangesLocally()" class="px-3 py-1.5 rounded-lg border border-olive-300 bg-white hover:bg-olive-50 text-olive-800 text-xs uppercase tracking-wider font-medium">Save Locally</button>
+                    <button onclick="handleMainSave()" class="px-5 py-1.5 rounded-lg bg-olive-900 text-white hover:bg-olive-800 text-xs uppercase tracking-wider font-semibold shadow-sm flex items-center gap-1.5">
                         <i class="ph ph-floppy-disk text-base"></i> Save Changes
                     </button>
                 </div>
@@ -677,19 +682,22 @@
             <div class="w-16 h-16 mx-auto mb-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-3xl shadow-sm">
                 <i class="ph ph-check-circle"></i>
             </div>
-            <span class="inline-block px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-emerald-100 text-emerald-800 mb-2">Live &amp; Updated</span>
+            <span class="inline-block px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider bg-emerald-100 text-emerald-800 mb-2">Saved Locally</span>
             <h3 class="font-serif text-2xl text-olive-900 mb-2 font-semibold">Changes Saved Successfully!</h3>
             <p class="text-xs text-olive-600 font-light mb-6 leading-relaxed">
-                Your gallery edits (additions, crops, edits, and spotlight tags) are <strong>saved and immediately active</strong> on your live website. No GitHub token or waiting required!
+                Your gallery edits (additions, crops, edits, and featured tags) are <strong>saved and active</strong> on this browser. To publish live to all visitors and devices across the web, use <strong>Cloud Sync</strong>.
             </p>
             <div class="space-y-2.5">
                 <a href="./#gallery" target="_blank" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs uppercase tracking-widest font-semibold shadow-soft flex items-center justify-center gap-2 transition-colors">
-                    <i class="ph ph-arrow-square-out text-base"></i> View Live Website
+                    <i class="ph ph-arrow-square-out text-base"></i> View Website
                 </a>
+                <button type="button" onclick="closeDirectSaveModal(); publishToGitHub();" class="w-full py-2.5 bg-olive-900 hover:bg-olive-800 text-white rounded-xl text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 transition-colors shadow-soft">
+                    <i class="ph ph-cloud-arrow-up text-base"></i> Sync to GitHub Cloud
+                </button>
                 <button type="button" onclick="exportJSON()" class="w-full py-2.5 bg-cream hover:bg-cream-dark text-olive-800 rounded-xl text-xs uppercase tracking-wider font-medium flex items-center justify-center gap-2 transition-colors border border-olive-200">
                     <i class="ph ph-download-simple text-base"></i> Download gallery.json Backup
                 </button>
-                <button type="button" onclick="closeDirectSaveModal()" class="w-full py-2.5 border border-olive-200 hover:bg-olive-50 text-olive-700 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors">
+                <button type="button" onclick="closeDirectSaveModal()" class="w-full py-2 border border-olive-200 hover:bg-olive-50 text-olive-700 rounded-xl text-xs uppercase tracking-wider font-medium transition-colors">
                     Done
                 </button>
             </div>
